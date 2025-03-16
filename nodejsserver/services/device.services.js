@@ -1,9 +1,9 @@
-const DeviceModel = require('../model/device_model');
+const DeviceModel = require('../model/device.model');
 
 class DeviceService {
-    static async registerDevice(line,stat, type, time, ctrl) {
+    static async registerDevice(line, stat, type, time, ctrl) {
         try {
-            const registerDevice = new DeviceModel({line,stat, type, time, ctrl });
+            const registerDevice = new DeviceModel({ line, stat, type, time, ctrl });
             return await registerDevice.save();
         } catch (error) {
             throw error;

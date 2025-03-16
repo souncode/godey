@@ -1,12 +1,12 @@
-const LineModel = require('../model/line_model');
-const DeviceModel = require('../model/device_model')
+const LineModel = require('../model/line.model');
+const DeviceModel = require('../model/device.model')
 
-class LineService{
-    static async registerLine(name){
-        try{
-            const addLine = new LineModel({name});
+class LineService {
+    static async registerLine(name) {
+        try {
+            const addLine = new LineModel({ name });
             return await addLine.save();
-        }catch(error){
+        } catch (error) {
             throw error
         }
     }

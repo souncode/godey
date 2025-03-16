@@ -19,7 +19,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: myDrawer,
+      drawer: myDrawer(context),
       appBar: AppBar(title: const Text('Dashboard Nhiệt Độ')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
