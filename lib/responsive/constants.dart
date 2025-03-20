@@ -34,7 +34,8 @@ late TextEditingController registerController;
 void testConnection() async {
   try {
     var response = await http.get(Uri.parse(url));
-    print("Connection: ${response.body}");
+    print("Status Code: ${response.statusCode}");
+    print("Response: ${response.body}");
   } catch (e) {
     print("Error: $e");
   }
@@ -67,10 +68,9 @@ Widget myDrawer(BuildContext context) {
           leading: const Icon(Icons.add),
           title: const Text(" A D D"),
           onTap: () {
-             testConnection();
+            testConnection();
             registerController = TextEditingController();
             registerLineDialog(context);
-           
           },
         ),
       ],
@@ -90,7 +90,7 @@ Future registerLineDialog(context) => showDialog(
         actions: [
           TextButton(
             onPressed: () async {
-             // registerLine(registerController.text);
+               registerLine(registerController.text);
             },
             child: Text('Register'),
           ),

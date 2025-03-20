@@ -1,2 +1,2 @@
-final url = "http://192.168.1.9:3000";
+final url = "http://localhost:3000";
 final registration = "$url/lineadd";

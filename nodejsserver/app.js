@@ -10,7 +10,6 @@ const app = express();
 app.use(cors());
 
 // Nếu chỉ muốn cho phép Flutter Web truy cập, dùng:
-app.use(cors({ origin: "http://localhost:45013" }));
 
 app.use(express.json());
 app.use(bodyParser.json());
