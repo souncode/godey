@@ -25,19 +25,19 @@ const deviceSchema = new Schema({
         {
             inde: {
                 type: String,
-                required: true,
+              
             },
             temp: {
                 type: String,
-                required: true,
+             
             },
             setv: {
                 type: String,
-                required: true,
+             
             },
             offs: {
                 type: String,
-                required: true,
+               
             },
         }
     ]
