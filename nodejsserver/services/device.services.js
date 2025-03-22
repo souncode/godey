@@ -9,6 +9,15 @@ class DeviceService {
             throw error;
         }
     }
+
+    static async getDeviceData(line) {
+        try {
+            const deviceData = await DeviceModel.find({line});
+            return deviceData;
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
 module.exports = DeviceService;

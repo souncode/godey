@@ -10,3 +10,14 @@ exports.register = async (req, res, next) => {
         throw error
     }
 } 
+
+exports.getDevice = async (req, res, next) => {
+
+    try {
+        const {line} = req.body;
+        let device = await DeviceService.getDeviceData(line);
+        res.json({ status: true, success: device})
+    } catch (error) {
+        throw error
+    }
+} 
