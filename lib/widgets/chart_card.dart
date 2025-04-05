@@ -18,7 +18,7 @@ class ChartCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [Text("Chart",style: TextStyle(fontSize: 14,fontWeight: FontWeight.w500),),
-        const SizedBox(height: 20,),
+        const SizedBox(height: 10,),
         AspectRatio(aspectRatio: 16/6,
         child: SfCartesianChart(
           title: ChartTitle(text: 'Dữ liệu nhiệt độ'),

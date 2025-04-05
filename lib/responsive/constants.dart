@@ -1,8 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:godey/widgets/line_show.dart';
 import 'package:http/http.dart' as http;
 import 'package:godey/config.dart';
+
+final GlobalKey<LineListWidgetState> _listKey =
+    GlobalKey<LineListWidgetState>();
 
 var myDefaultBackground = Colors.grey[300];
 var myAppBar = AppBar(
@@ -43,32 +47,16 @@ void testConnection() async {
 
 Widget myDrawer(BuildContext context) {
   return Drawer(
-    surfaceTintColor: Colors.amber,
+    width: 250,
     backgroundColor: Colors.grey[300],
     child: Column(
       children: [
-        const DrawerHeader(child: Icon(Icons.face)),
-        const ListTile(
-          leading: Icon(Icons.dashboard),
-          title: Text(" D A S H B O A R D"),
-        ),
-        const ListTile(
-          leading: Icon(Icons.remove_red_eye_outlined),
-          title: Text(" V I S I O N"),
-        ),
-        const ListTile(
-          leading: Icon(Icons.person_2_outlined),
-          title: Text(" A B O U T"),
-        ),
-        const ListTile(
-          leading: Icon(Icons.exit_to_app),
-          title: Text(" E X I T"),
-        ),
+        const DrawerHeader(child: Icon(Icons.heart_broken)),
+        Expanded(child: LineListWidget(key: _listKey)),
         ListTile(
           leading: const Icon(Icons.add),
-          title: const Text(" A D D"),
+          title: const Text("Add Line"),
           onTap: () {
-            testConnection();
             registerController = TextEditingController();
             registerLineDialog(context);
           },
@@ -90,7 +78,8 @@ Future registerLineDialog(context) => showDialog(
         actions: [
           TextButton(
             onPressed: () async {
-               registerLine(registerController.text);
+              registerLine(registerController.text);
+              _listKey.currentState?.refreshLines();
             },
             child: Text('Register'),
           ),

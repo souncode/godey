@@ -9,4 +9,13 @@ exports.register = async (req, res, next) => {
     } catch (error) {
         throw error
     }
+}
+exports.getLine = async (req, res, next) => {
+
+    try {
+        let line = await LineService.getLineData();
+        res.json({ status: true, success: line })
+    } catch (error) {
+        throw error
+    }
 } 
