@@ -15,7 +15,6 @@ class DesktopScaffold extends StatefulWidget {
   State<DesktopScaffold> createState() => _DesktopScaffoldState();
 }
 
-
 final List<ErrorData> errorList = [
   ErrorData('1', 30),
   ErrorData('2', 3),
@@ -23,7 +22,6 @@ final List<ErrorData> errorList = [
   ErrorData('4', 4),
   ErrorData('5', 1),
 ];
-
 
 class _DesktopScaffoldState extends State<DesktopScaffold> {
   List<TemperatureData> data = [
