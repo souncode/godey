@@ -89,7 +89,7 @@ class _TabletScaffoldState extends State<TabletScaffold> {
               Text('Hello World'),
               FloatingActionButton(
                 onPressed: () {
-                  getLine();
+                  getDevice(context);
                 },
               ),
               // Thêm các widget khác nếu cần

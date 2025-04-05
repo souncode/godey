@@ -1,10 +1,8 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:godey/widgets/line_show.dart';
 import 'package:http/http.dart' as http;
 import 'package:godey/config.dart';
-
 final GlobalKey<LineListWidgetState> _listKey =
     GlobalKey<LineListWidgetState>();
 

@@ -11,14 +11,13 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-
   @override
-Widget build(BuildContext context){
-    return  MaterialApp(
+  Widget build(BuildContext context) {
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: ResponsiveLayout(
         mobileScaffold: const MobileScaffold(),
-        tabletScaffold:  const TabletScaffold(),
+        tabletScaffold: const TabletScaffold(),
         desktopScaffold: const DesktopScaffold(),
       ),
     );

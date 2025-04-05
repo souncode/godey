@@ -1,11 +1,8 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:godey/config.dart';
 import 'package:godey/const/constant.dart';
 import 'package:godey/responsive/constants.dart';
+import 'package:godey/widgets/chart_show.dart';
 import 'package:godey/widgets/donut_chart.dart';
-import 'package:http/http.dart' as http;
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class DesktopScaffold extends StatefulWidget {
@@ -24,11 +21,6 @@ final List<ErrorData> errorList = [
 ];
 
 class _DesktopScaffoldState extends State<DesktopScaffold> {
-  List<TemperatureData> data = [
-    TemperatureData(DateTime(2025, 3, 1, 12, 0), 25.5),
-    TemperatureData(DateTime(2025, 3, 1, 12, 30), 26.0),
-    TemperatureData(DateTime(2025, 3, 1, 13, 0), 26.5),
-  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +31,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
           'Desktop scaffold',
           style: TextStyle(
             color: Colors.cyanAccent,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w900,
           ),
         ),
       ),
@@ -49,58 +41,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
           Expanded(
             flex: 2,
             child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: SfCartesianChart(
-                      title: ChartTitle(text: 'Chart 1'),
-                      primaryXAxis: DateTimeAxis(),
-                      primaryYAxis: NumericAxis(labelFormat: '{value}°C'),
-                      series: <CartesianSeries<TemperatureData, DateTime>>[
-                        LineSeries<TemperatureData, DateTime>(
-                          dataSource: data,
-                          xValueMapper: (TemperatureData temp, _) => temp.time,
-                          yValueMapper:
-                              (TemperatureData temp, _) => temp.temperature,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: SfCartesianChart(
-                      title: ChartTitle(text: 'Chart 2'),
-                      primaryXAxis: DateTimeAxis(),
-                      primaryYAxis: NumericAxis(labelFormat: '{value}°C'),
-                      series: <CartesianSeries<TemperatureData, DateTime>>[
-                        LineSeries<TemperatureData, DateTime>(
-                          dataSource: data,
-                          xValueMapper: (TemperatureData temp, _) => temp.time,
-                          yValueMapper:
-                              (TemperatureData temp, _) => temp.temperature,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: SfCartesianChart(
-                      title: ChartTitle(text: 'Chart 3'),
-                      primaryXAxis: DateTimeAxis(),
-                      primaryYAxis: NumericAxis(labelFormat: '{value}°C'),
-                      series: <CartesianSeries<TemperatureData, DateTime>>[
-                        LineSeries<TemperatureData, DateTime>(
-                          dataSource: data,
-                          xValueMapper: (TemperatureData temp, _) => temp.time,
-                          yValueMapper:
-                              (TemperatureData temp, _) => temp.temperature,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+              child: Column(children: [ChartShow()]),
             ),
           ),
           Expanded(
