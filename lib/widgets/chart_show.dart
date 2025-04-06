@@ -18,16 +18,42 @@ class ChartShow extends StatelessWidget {
               ? Center(child: CircularProgressIndicator())
               : SfCartesianChart(
                 title: ChartTitle(text: chartTitle),
+                legend: Legend(isVisible: true),
+                tooltipBehavior: TooltipBehavior(enable: true),
+                crosshairBehavior: CrosshairBehavior(
+                  enable: true,
+                  lineType: CrosshairLineType.both,
+                  activationMode: ActivationMode.longPress,
+                ),
+                zoomPanBehavior: ZoomPanBehavior(
+                  enablePinching: true,
+                  enablePanning: true,
+                  zoomMode: ZoomMode.x,
+                ),
                 primaryXAxis: DateTimeAxis(),
                 primaryYAxis: NumericAxis(labelFormat: '{value}°C'),
-                series: <CartesianSeries<TemperatureData, DateTime>>[
-                  LineSeries<TemperatureData, DateTime>(
-                    dataSource: tempData,
-                    xValueMapper: (TemperatureData temp, _) => temp.time,
-                    yValueMapper: (TemperatureData temp, _) => temp.temperature,
-                  ),
-                ],
+                series: _buildSeries(),
               ),
     );
+  }
+
+  List<LineSeries<TemperatureData, DateTime>> _buildSeries() {
+    final Map<String, List<TemperatureData>> groupedData = {};
+
+    for (var data in tempData) {
+      groupedData.putIfAbsent(data.ctrlName, () => []).add(data);
+    }
+
+    return groupedData.entries.map((entry) {
+      return LineSeries<TemperatureData, DateTime>(
+        name: entry.key,
+        dataSource: entry.value,
+        xValueMapper: (TemperatureData temp, _) => temp.time,
+        yValueMapper: (TemperatureData temp, _) => temp.temperature,
+        markerSettings: MarkerSettings(isVisible: true),
+        dataLabelSettings: DataLabelSettings(isVisible: false),
+        enableTooltip: true,
+      );
+    }).toList();
   }
 }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -19,11 +20,20 @@ class AllCharts extends StatefulWidget {
 class _AllChartsState extends State<AllCharts> {
   List<Map<String, dynamic>> chartDataList = []; // mỗi item gồm title + data
   bool loading = true;
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
     loadAllCharts();
+    // Lặp lại việc tải dữ liệu mỗi 30 giây
+    _timer = Timer.periodic(Duration(seconds: 10), (timer) => loadAllCharts());
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel(); // Dọn dẹp khi widget bị hủy
+    super.dispose();
   }
 
   void loadAllCharts() async {
@@ -38,20 +48,33 @@ class _AllChartsState extends State<AllCharts> {
         var jsonRes = jsonDecode(response.body);
         List devices = jsonRes['success'] ?? [];
 
-        List<Map<String, dynamic>> tempList = [];
+        List<Map<String, dynamic>> updatedList = [];
 
         for (var device in devices) {
           String title = device['stat'] ?? 'Unknown';
-          List<TemperatureData> data = extractTemperatureData(device);
+          List<TemperatureData> newData = extractTemperatureData(device);
 
-          tempList.add({
-            'title': title,
-            'data': data,
-          });
+          // tìm biểu đồ tương ứng đã có
+          var existingChart = chartDataList.firstWhere(
+            (element) => element['title'] == title,
+            orElse: () => {'title': title, 'data': <TemperatureData>[]},
+          );
+
+          List<TemperatureData> combinedData = List<TemperatureData>.from(
+            existingChart['data'],
+          );
+          combinedData.addAll(newData);
+
+          // giữ tối đa 30 điểm
+          if (combinedData.length > 30) {
+            combinedData = combinedData.sublist(combinedData.length - 30);
+          }
+
+          updatedList.add({'title': title, 'data': combinedData});
         }
 
         setState(() {
-          chartDataList = tempList;
+          chartDataList = updatedList;
           loading = false;
         });
       } else {
@@ -62,17 +85,19 @@ class _AllChartsState extends State<AllCharts> {
     }
   }
 
-  List<TemperatureData> extractTemperatureData(Map<String, dynamic> deviceData) {
+  List<TemperatureData> extractTemperatureData(
+    Map<String, dynamic> deviceData,
+  ) {
     List<TemperatureData> tempData = [];
-    String commonTime = deviceData['ctrl'][0]['time'].toString();
-    DateTime baseTime = DateTime.now().add(Duration(minutes: int.tryParse(commonTime) ?? 0));
+    DateTime now = DateTime.now();
 
     for (var ctrl in deviceData['ctrl']) {
-      if (ctrl['temp'] != null) {
+      if (ctrl['temp'] != null && ctrl['inde'] != null) {
         tempData.add(
           TemperatureData(
-            time: baseTime,
+            time: now,
             temperature: double.tryParse(ctrl['temp'].toString()) ?? 0.0,
+            ctrlName: ctrl['inde'].toString(),
           ),
         );
       }
@@ -86,12 +111,15 @@ class _AllChartsState extends State<AllCharts> {
     return loading
         ? Center(child: CircularProgressIndicator())
         : Column(
-            children: chartDataList
-                .map((chart) => ChartShow(
+          children:
+              chartDataList
+                  .map(
+                    (chart) => ChartShow(
                       chartTitle: chart['title'],
                       tempData: chart['data'],
-                    ))
-                .toList(),
-          );
+                    ),
+                  )
+                  .toList(),
+        );
   }
 }
