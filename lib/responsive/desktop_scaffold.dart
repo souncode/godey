@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:godey/const/constant.dart';
 import 'package:godey/responsive/constants.dart';
-import 'package:godey/widgets/chart_show.dart';
+import 'package:godey/widgets/all_chart.dart';
 import 'package:godey/widgets/donut_chart.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
 
 class DesktopScaffold extends StatefulWidget {
   const DesktopScaffold({super.key});
@@ -41,7 +40,9 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
           Expanded(
             flex: 2,
             child: SingleChildScrollView(
-              child: Column(children: [ChartShow()]),
+              child: Column(
+                children: [AllCharts(lineId: "67df1eee847d020add50949f")],
+              ),
             ),
           ),
           Expanded(
@@ -61,9 +62,3 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
   }
 }
 
-class TemperatureData {
-  final DateTime time;
-  final double temperature;
-
-  TemperatureData(this.time, this.temperature);
-}
