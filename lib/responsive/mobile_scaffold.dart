@@ -9,13 +9,21 @@ class MobileScaffold extends StatefulWidget {
   State<MobileScaffold> createState() => _MobileScaffoldState();
 }
 
+String currentLine = "";
 class _MobileScaffoldState extends State<MobileScaffold> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: myAppBar,
       backgroundColor: Colors.grey[300],
-      drawer: myDrawer(context),
+      drawer: myDrawer(
+  context,
+  onLineSelected: (lineId) {
+    setState(() {
+      currentLine = lineId;
+    });
+  },
+),
       body: Column(
         children: [
           AspectRatio(

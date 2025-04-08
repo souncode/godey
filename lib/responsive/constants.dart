@@ -42,15 +42,19 @@ void testConnection() async {
     print("Error: $e");
   }
 }
-
-Widget myDrawer(BuildContext context) {
+Widget myDrawer(BuildContext context, {required Function(String) onLineSelected}) {
   return Drawer(
     width: 250,
     backgroundColor: Colors.grey[300],
     child: Column(
       children: [
         const DrawerHeader(child: Icon(Icons.heart_broken)),
-        Expanded(child: LineListWidget(key: _listKey)),
+        Expanded(
+          child: LineListWidget(
+            key: _listKey,
+            onLineTap: onLineSelected, // ✅ THÊM DÒNG NÀY
+          ),
+        ),
         ListTile(
           leading: const Icon(Icons.add),
           title: const Text("Add Line"),
@@ -63,6 +67,9 @@ Widget myDrawer(BuildContext context) {
     ),
   );
 }
+
+
+
 
 Future registerLineDialog(context) => showDialog(
   context: context,

@@ -13,6 +13,7 @@ class TabletScaffold extends StatefulWidget {
   State<TabletScaffold> createState() => _TabletScaffoldState();
 }
 
+String currentLine = "";
 String lineta = "67df1eee847d020add50949f";
 void getDevice(line) async {
   try {
@@ -79,7 +80,14 @@ class _TabletScaffoldState extends State<TabletScaffold> {
     return Scaffold(
       backgroundColor: myDefaultBackground,
       appBar: myAppBar,
-      drawer: myDrawer(context),
+      drawer: myDrawer(
+        context,
+        onLineSelected: (lineId) {
+          setState(() {
+            currentLine = lineId;
+          });
+        },
+      ),
       body: Row(
         children: [
           Column(

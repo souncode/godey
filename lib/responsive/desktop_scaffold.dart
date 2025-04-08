@@ -11,7 +11,6 @@ class DesktopScaffold extends StatefulWidget {
   State<DesktopScaffold> createState() => _DesktopScaffoldState();
 }
 
-String currentLine = "";
 final List<ErrorData> errorList = [
   ErrorData('1', 30),
   ErrorData('2', 3),
@@ -21,6 +20,8 @@ final List<ErrorData> errorList = [
 ];
 
 class _DesktopScaffoldState extends State<DesktopScaffold> {
+  String currentLine = ""; // Biến lưu line được chọn
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,15 +38,38 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
       ),
       body: Row(
         children: [
-          myDrawer(context),
+          // Drawer bên trái
+          myDrawer(
+            context,
+            onLineSelected: (lineId) {
+              setState(() {
+                currentLine = lineId;
+              });
+            },
+          ),
+
+          // Biểu đồ chính giữa
           Expanded(
             flex: 2,
             child: SingleChildScrollView(
               child: Column(
-                children: [AllCharts(lineId: "67df1eee847d020add50949f")],
+                children: [
+                  if (currentLine.isNotEmpty)
+                    AllCharts(lineId: currentLine)
+                  else
+                    const Padding(
+                      padding: EdgeInsets.all(20.0),
+                      child: Text(
+                        "Chọn một line để hiển thị biểu đồ",
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
+                    ),
+                ],
               ),
             ),
           ),
+
+          // Biểu đồ lỗi bên phải
           Expanded(
             flex: 1,
             child: Container(

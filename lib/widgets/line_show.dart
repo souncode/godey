@@ -1,17 +1,20 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:godey/config.dart';
 import 'package:http/http.dart' as http;
 
 class LineListWidget extends StatefulWidget {
-  const LineListWidget({super.key});
+  final void Function(String) onLineTap;
+
+  const LineListWidget({
+    super.key,
+    required this.onLineTap,
+  });
 
   @override
   State<LineListWidget> createState() => LineListWidgetState();
 }
 
-// Chỉnh sửa để trả về danh sách Map chứa cả id và name
 Future<List<Map<String, dynamic>>> fetchLines() async {
   try {
     var response = await http.post(Uri.parse(getlinecfg));
@@ -75,10 +78,10 @@ class LineListWidgetState extends State<LineListWidget> {
               leading: const Icon(Icons.monitor_heart),
               title: Text(
                 line['name'],
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               onTap: () {
-                print("Tapped Line ID: ${line['id']}");
+                widget.onLineTap(line['id']); // ✅ Gọi callback
               },
             );
           },
