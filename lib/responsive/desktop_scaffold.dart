@@ -11,6 +11,7 @@ class DesktopScaffold extends StatefulWidget {
   State<DesktopScaffold> createState() => _DesktopScaffoldState();
 }
 
+String currentLine = "";
 final List<ErrorData> errorList = [
   ErrorData('1', 30),
   ErrorData('2', 3),
@@ -61,4 +62,3 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
     );
   }
 }
-

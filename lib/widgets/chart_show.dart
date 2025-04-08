@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../model/ctrl_model.dart';
+import 'package:intl/intl.dart';
 
 class ChartShow extends StatelessWidget {
   final String chartTitle;
@@ -30,7 +31,11 @@ class ChartShow extends StatelessWidget {
                   enablePanning: true,
                   zoomMode: ZoomMode.x,
                 ),
-                primaryXAxis: DateTimeAxis(),
+                primaryXAxis: DateTimeAxis(
+                  dateFormat: DateFormat.Hms(), // Hiển thị HH:mm:ss
+                  intervalType: DateTimeIntervalType.seconds,
+                  edgeLabelPlacement: EdgeLabelPlacement.shift,
+                ),
                 primaryYAxis: NumericAxis(labelFormat: '{value}°C'),
                 series: _buildSeries(),
               ),

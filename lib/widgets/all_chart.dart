@@ -27,7 +27,7 @@ class _AllChartsState extends State<AllCharts> {
     super.initState();
     loadAllCharts();
     // Lặp lại việc tải dữ liệu mỗi 30 giây
-    _timer = Timer.periodic(Duration(seconds: 10), (timer) => loadAllCharts());
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) => loadAllCharts());
   }
 
   @override
@@ -66,8 +66,8 @@ class _AllChartsState extends State<AllCharts> {
           combinedData.addAll(newData);
 
           // giữ tối đa 30 điểm
-          if (combinedData.length > 30) {
-            combinedData = combinedData.sublist(combinedData.length - 30);
+          if (combinedData.length > 300) {
+            combinedData = combinedData.sublist(combinedData.length - 300);
           }
 
           updatedList.add({'title': title, 'data': combinedData});
@@ -90,7 +90,6 @@ class _AllChartsState extends State<AllCharts> {
   ) {
     List<TemperatureData> tempData = [];
     DateTime now = DateTime.now();
-
     for (var ctrl in deviceData['ctrl']) {
       if (ctrl['temp'] != null && ctrl['inde'] != null) {
         tempData.add(
