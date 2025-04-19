@@ -8,9 +8,6 @@ const app = express();
 
 // ✅ Bật CORS cho tất cả domain (tạm thời)
 app.use(cors());
-
-// Nếu chỉ muốn cho phép Flutter Web truy cập, dùng:
-
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
