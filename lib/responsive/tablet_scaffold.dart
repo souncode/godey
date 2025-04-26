@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:godey/config.dart';
+import 'package:godey/const/constant.dart';
 import 'package:godey/responsive/constants.dart';
 import 'package:godey/widgets/chart_card.dart';
 import 'package:http/http.dart' as http;
@@ -78,7 +79,7 @@ class _TabletScaffoldState extends State<TabletScaffold> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: myDefaultBackground,
+      backgroundColor: backgroundColor,
       appBar: myAppBar,
       drawer: myDrawer(
         context,

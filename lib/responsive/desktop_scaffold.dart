@@ -25,7 +25,6 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 233, 216, 216),
       appBar: AppBar(
         backgroundColor: backgroundColor,
         title: const Text(

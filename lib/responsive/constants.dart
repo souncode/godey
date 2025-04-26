@@ -1,15 +1,16 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:godey/const/constant.dart';
 import 'package:godey/widgets/line_show.dart';
 import 'package:http/http.dart' as http;
 import 'package:godey/config.dart';
+
 final GlobalKey<LineListWidgetState> _listKey =
     GlobalKey<LineListWidgetState>();
 
-var myDefaultBackground = Colors.grey[300];
 var myAppBar = AppBar(
   iconTheme: IconThemeData(color: Colors.white),
-  backgroundColor: Colors.grey[900],
+  backgroundColor: secondaryColor,
 );
 
 void registerLine(String name) async {
@@ -42,10 +43,14 @@ void testConnection() async {
     print("Error: $e");
   }
 }
-Widget myDrawer(BuildContext context, {required Function(String) onLineSelected}) {
+
+Widget myDrawer(
+  BuildContext context, {
+  required Function(String) onLineSelected,
+}) {
   return Drawer(
     width: 250,
-    backgroundColor: Colors.grey[300],
+    backgroundColor: Color.fromARGB(2255, 28, 29, 33),
     child: Column(
       children: [
         const DrawerHeader(child: Icon(Icons.heart_broken)),
@@ -67,9 +72,6 @@ Widget myDrawer(BuildContext context, {required Function(String) onLineSelected}
     ),
   );
 }
-
-
-
 
 Future registerLineDialog(context) => showDialog(
   context: context,

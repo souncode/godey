@@ -21,21 +21,20 @@ class ChartShow extends StatelessWidget {
               : Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: const Color.fromARGB(255, 17, 52, 52),
-                  boxShadow: [
-                    BoxShadow(
-                      color: cardBackgroundColor,
-                      offset: const Offset(1.0, 1.0), //Offset
-                      //  blurRadius: 5.0,
-                    ),
-                  ],
+                  color: secondaryColor,
                 ),
                 child: SfCartesianChart(
                   title: ChartTitle(
                     text: chartTitle,
                     textStyle: TextStyle(color: textColor),
                   ),
-                  legend: Legend(isVisible: true),
+                  legend: Legend(
+                    isVisible: true,
+                    textStyle: TextStyle(
+                      color: textColor, // đổi màu chữ trục X
+                      fontSize: 12, // có thể đổi size luôn
+                    ),
+                  ),
                   tooltipBehavior: TooltipBehavior(enable: true),
                   crosshairBehavior: CrosshairBehavior(
                     enable: true,
@@ -51,8 +50,18 @@ class ChartShow extends StatelessWidget {
                     dateFormat: DateFormat.Hms(), // Hiển thị HH:mm:ss
                     intervalType: DateTimeIntervalType.seconds,
                     edgeLabelPlacement: EdgeLabelPlacement.shift,
+                    labelStyle: TextStyle(
+                      color: textColor, // đổi màu chữ trục X
+                      fontSize: 12, // có thể đổi size luôn
+                    ),
                   ),
-                  primaryYAxis: NumericAxis(labelFormat: '{value}°C'),
+                  primaryYAxis: NumericAxis(
+                    labelFormat: '{value}°C',
+                    labelStyle: TextStyle(
+                      color: textColor, // đổi màu chữ trục X
+                      fontSize: 12, // có thể đổi size luôn
+                    ),
+                  ),
                   series: _buildSeries(),
                 ),
               ),

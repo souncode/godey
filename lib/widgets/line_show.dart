@@ -1,15 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:godey/config.dart';
+import 'package:godey/const/constant.dart';
 import 'package:http/http.dart' as http;
 
 class LineListWidget extends StatefulWidget {
   final void Function(String) onLineTap;
 
-  const LineListWidget({
-    super.key,
-    required this.onLineTap,
-  });
+  const LineListWidget({super.key, required this.onLineTap});
 
   @override
   State<LineListWidget> createState() => LineListWidgetState();
@@ -77,8 +75,11 @@ class LineListWidgetState extends State<LineListWidget> {
             return ListTile(
               leading: const Icon(Icons.monitor_heart),
               title: Text(
-                line['name'],
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                line['name'].toString().toUpperCase(),
+                style: const TextStyle(
+                  color: textColor,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               onTap: () {
                 widget.onLineTap(line['id']); // ✅ Gọi callback
