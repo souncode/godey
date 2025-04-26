@@ -25,14 +25,16 @@ class ChartShow extends StatelessWidget {
                   boxShadow: [
                     BoxShadow(
                       color: cardBackgroundColor,
-                      offset: const Offset(5.0, 5.0), //Offset
-                      blurRadius: 10.0,
-                      spreadRadius: 2.0,
+                      offset: const Offset(1.0, 1.0), //Offset
+                      //  blurRadius: 5.0,
                     ),
                   ],
                 ),
                 child: SfCartesianChart(
-                  title: ChartTitle(text: chartTitle),
+                  title: ChartTitle(
+                    text: chartTitle,
+                    textStyle: TextStyle(color: textColor),
+                  ),
                   legend: Legend(isVisible: true),
                   tooltipBehavior: TooltipBehavior(enable: true),
                   crosshairBehavior: CrosshairBehavior(
