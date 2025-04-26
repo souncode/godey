@@ -14,33 +14,51 @@ const deviceSchema = new Schema({
         required: true,
     },
     type: {
-        type: String,  
-        required: true, 
+        type: String,
+        required: true,
     },
     time: {
-        type: String, 
-        required: true, 
+        type: String,
+        required: true,
     },
     ctrl: [
+
         {
             inde: {
                 type: String,
-              
+
             },
             temp: {
                 type: String,
-             
+
             },
             setv: {
                 type: String,
-             
+
             },
             offs: {
                 type: String,
-               
+
             },
         }
-    ]
+    ],
+    moni: [
+
+        {
+            good: {
+                type: String,
+
+            },
+            ngoo: {
+                type: String,
+
+            },
+            oee: {
+                type: String,
+
+            },
+        }
+    ],
 });
 
 

@@ -1,12 +1,12 @@
 version: "3"
 services:
   web:
-    image: my-node-app
+    image: soun-node-app
     build: .
     ports:
-      - "80:80"
       - "3000:3000"
     volumes:
       - .:/app
       - /app/node_modules
-    command: npm run dev
+    command: node server.js
+    restart: always

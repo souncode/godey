@@ -7,7 +7,7 @@ const portApi = 3000;
 //const portWeb = 80;
 
 // Middleware để phục vụ các file tĩnh như HTML, CSS, JS cho trang web
-app.use(express.static('/home/soun/workspace/xtth.wap.sh'));
+app.use(express.static('./xtth.wap.sh'));
 
 // API: Khi truy cập vào /api sẽ trả về thông báo
 app.get('/api', (req, res) => {
@@ -19,7 +19,7 @@ app.get('/', (req, res) => {
     res.sendFile(path.join('/home/soun/workspace/xtth.wap.sh', 'index.html'));
 });
 //app.listen(portWeb, "0.0.0.0", () => {
-//   console.log(`Web server running at http://0.0.0.0:${portWeb}`);
+ //  console.log(`Web server running at http://0.0.0.0:${portWeb}`);
 //});
 
 // Lắng nghe trên port 3000 cho API
