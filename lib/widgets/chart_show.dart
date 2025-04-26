@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:godey/const/constant.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../model/ctrl_model.dart';
@@ -17,27 +18,41 @@ class ChartShow extends StatelessWidget {
       child:
           tempData.isEmpty
               ? Center(child: CircularProgressIndicator())
-              : SfCartesianChart(
-                title: ChartTitle(text: chartTitle),
-                legend: Legend(isVisible: true),
-                tooltipBehavior: TooltipBehavior(enable: true),
-                crosshairBehavior: CrosshairBehavior(
-                  enable: true,
-                  lineType: CrosshairLineType.both,
-                  activationMode: ActivationMode.longPress,
+              : Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: const Color.fromARGB(255, 17, 52, 52),
+                  boxShadow: [
+                    BoxShadow(
+                      color: cardBackgroundColor,
+                      offset: const Offset(5.0, 5.0), //Offset
+                      blurRadius: 10.0,
+                      spreadRadius: 2.0,
+                    ),
+                  ],
                 ),
-                zoomPanBehavior: ZoomPanBehavior(
-                  enablePinching: true,
-                  enablePanning: true,
-                  zoomMode: ZoomMode.x,
+                child: SfCartesianChart(
+                  title: ChartTitle(text: chartTitle),
+                  legend: Legend(isVisible: true),
+                  tooltipBehavior: TooltipBehavior(enable: true),
+                  crosshairBehavior: CrosshairBehavior(
+                    enable: true,
+                    lineType: CrosshairLineType.both,
+                    activationMode: ActivationMode.longPress,
+                  ),
+                  zoomPanBehavior: ZoomPanBehavior(
+                    enablePinching: true,
+                    enablePanning: true,
+                    zoomMode: ZoomMode.x,
+                  ),
+                  primaryXAxis: DateTimeAxis(
+                    dateFormat: DateFormat.Hms(), // Hiển thị HH:mm:ss
+                    intervalType: DateTimeIntervalType.seconds,
+                    edgeLabelPlacement: EdgeLabelPlacement.shift,
+                  ),
+                  primaryYAxis: NumericAxis(labelFormat: '{value}°C'),
+                  series: _buildSeries(),
                 ),
-                primaryXAxis: DateTimeAxis(
-                  dateFormat: DateFormat.Hms(), // Hiển thị HH:mm:ss
-                  intervalType: DateTimeIntervalType.seconds,
-                  edgeLabelPlacement: EdgeLabelPlacement.shift,
-                ),
-                primaryYAxis: NumericAxis(labelFormat: '{value}°C'),
-                series: _buildSeries(),
               ),
     );
   }

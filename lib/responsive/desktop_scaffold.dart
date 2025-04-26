@@ -25,7 +25,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: secondaryColor,
+      backgroundColor: const Color.fromARGB(255, 233, 216, 216),
       appBar: AppBar(
         backgroundColor: backgroundColor,
         title: const Text(
@@ -72,12 +72,27 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
           // Biểu đồ lỗi bên phải
           Expanded(
             flex: 1,
-            child: Container(
-              color: const Color.fromARGB(255, 77, 93, 93),
-              child: Column(
-                children: [
-                  SizedBox(child: ErrorDonutChart(errorData: errorList)),
-                ],
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: const Color.fromARGB(255, 242, 250, 250),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color.fromARGB(255, 215, 210, 210),
+                      offset: const Offset(5.0, 5.0), //Offset
+                      blurRadius: 10.0,
+                      spreadRadius: 2.0,
+                    ),
+                  ],
+                ),
+
+                child: Column(
+                  children: [
+                    SizedBox(child: ErrorDonutChart(errorData: errorList)),
+                  ],
+                ),
               ),
             ),
           ),
