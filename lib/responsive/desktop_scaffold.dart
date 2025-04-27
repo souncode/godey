@@ -26,7 +26,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: backgroundColor,
+        backgroundColor: secondaryColor,
         title: const Text(
           'Desktop scaffold',
           style: TextStyle(
@@ -35,67 +35,77 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
           ),
         ),
       ),
-      body: Row(
-        children: [
-          // Drawer bên trái
-          myDrawer(
-            context,
-            onLineSelected: (lineId) {
-              setState(() {
-                currentLine = lineId;
-              });
-            },
-          ),
-
-          // Biểu đồ chính giữa
-          Expanded(
-            flex: 2,
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  if (currentLine.isNotEmpty)
-                    AllCharts(lineId: currentLine)
-                  else
-                    const Padding(
-                      padding: EdgeInsets.all(20.0),
-                      child: Text(
-                        "Chọn một line để hiển thị biểu đồ",
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      ),
-                    ),
-                ],
+      body: Container(
+        color: backgroundColor,
+        padding: EdgeInsets.all(20),
+        child: Row(
+          children: [
+            // Drawer bên trái
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(30.0),
+                child: myDesktopDrawer(
+                  context,
+                  onLineSelected: (lineId) {
+                    setState(() {
+                      currentLine = lineId;
+                    });
+                  },
+                ),
               ),
             ),
-          ),
 
-          // Biểu đồ lỗi bên phải
-          Expanded(
-            flex: 1,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: const Color.fromARGB(255, 242, 250, 250),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color.fromARGB(255, 215, 210, 210),
-                      offset: const Offset(5.0, 5.0), //Offset
-                      blurRadius: 10.0,
-                      spreadRadius: 2.0,
-                    ),
-                  ],
-                ),
-
+            // Biểu đồ chính giữa
+            Expanded(
+              flex: 8,
+              child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    SizedBox(child: ErrorDonutChart(errorData: errorList)),
+                    if (currentLine.isNotEmpty)
+                      AllCharts(lineId: currentLine)
+                    else
+                      const Padding(
+                        padding: EdgeInsets.all(20.0),
+                        child: Text(
+                          "Chọn một line để hiển thị biểu đồ",
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                        ),
+                      ),
                   ],
                 ),
               ),
             ),
-          ),
-        ],
+
+            // Biểu đồ lỗi bên phải
+            Expanded(
+              flex: 3,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: secondaryColor,
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color.fromARGB(255, 215, 210, 210),
+                        offset: const Offset(5.0, 5.0), //Offset
+                        blurRadius: 10.0,
+                        spreadRadius: 2.0,
+                      ),
+                    ],
+                  ),
+
+                  child: Column(
+                    children: [
+                      SizedBox(child: ErrorDonutChart(errorData: errorList)),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

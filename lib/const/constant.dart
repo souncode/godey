@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 
 const cardBackgroundColor = Color.fromARGB(255, 28, 29, 33);
 const primaryColor = Color(0xff2697ff);
-const secondaryColor = Color.fromARGB(2255, 28, 29, 33);
+const secondaryColor = Color.fromARGB(255, 28, 29, 33);
 const backgroundColor = Color(0xFF8F8F8F8);
 const selectionColor = Color(0xff88b2ac);
 const textColor = Color.fromARGB(255, 181, 183, 192);

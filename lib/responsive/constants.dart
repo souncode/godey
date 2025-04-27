@@ -51,9 +51,53 @@ Widget myDrawer(
   return Drawer(
     width: 250,
     backgroundColor: Color.fromARGB(2255, 28, 29, 33),
+    child: Container(
+      child: Column(
+        children: [
+          const DrawerHeader(child: Icon(Icons.heart_broken)),
+          Expanded(
+            child: LineListWidget(
+              key: _listKey,
+              onLineTap: onLineSelected, // ✅ THÊM DÒNG NÀY
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.add),
+            title: const Text("Add Line"),
+            onTap: () {
+              registerController = TextEditingController();
+              registerLineDialog(context);
+            },
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget myDesktopDrawer(
+  BuildContext context, {
+  required Function(String) onLineSelected,
+}) {
+  return Container(
+    decoration: BoxDecoration(
+      color: Color.fromARGB(255, 28, 29, 33),
+      borderRadius: BorderRadius.circular(30),
+    ),
     child: Column(
       children: [
-        const DrawerHeader(child: Icon(Icons.heart_broken)),
+        const DrawerHeader(
+          child: Padding(
+            padding: EdgeInsets.only(top: 30),
+            child: Column(
+              children: [
+                Icon(color: Colors.cyanAccent, Icons.heart_broken),
+                SizedBox(height: 58),
+                Text("Menu", style: TextStyle(color: textColor)),
+              ],
+            ),
+          ),
+        ),
         Expanded(
           child: LineListWidget(
             key: _listKey,
