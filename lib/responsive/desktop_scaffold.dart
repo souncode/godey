@@ -62,8 +62,47 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
+                    Row(children: [
+                      Column(
+                          children: [
+                            Text("ADMIN",style: TextStyle(
+                              
+                            ),),
+                            Row(children: [
+                              Text("Logged",style: TextStyle(fontSize: 8),),
+                              Icon(Icons.verified,size: 6,color: Colors.blue,)
+                            ],),
+                 
+                          ],
+                        ),
+                        SizedBox(width: 10,),
+                        Expanded(child: SizedBox(height: 50,child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: TextField(
+                            decoration: InputDecoration(
+                              hintText: "Search",
+                              hintStyle: TextStyle(color: textColor),
+                              fillColor: secondaryCardColor,
+                              filled: true,
+                              border:OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius: BorderRadius.all(Radius.circular(10))
+                              )
+                            ),
+                          ),
+                        ),))
+                    ],
+                    ),
                     if (currentLine.isNotEmpty)
-                      AllCharts(lineId: currentLine)
+                      Column(
+                        children: [Row(
+                    children: [
+                      Text("Devices"),
+                    ],
+                  ),
+                          AllCharts(lineId: currentLine),
+                        ],
+                      )
                     else
                       const Padding(
                         padding: EdgeInsets.all(20.0),
@@ -82,25 +121,37 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
               flex: 3,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: secondaryColor,
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color.fromARGB(255, 215, 210, 210),
-                        offset: const Offset(5.0, 5.0), //Offset
-                        blurRadius: 10.0,
-                        spreadRadius: 2.0,
+                child: Column(
+                  children: [
+                    Container(
+                      child: Text(
+                        style: TextStyle(
+                        
+                        ),
+                        "Total"
                       ),
-                    ],
-                  ),
-
-                  child: Column(
-                    children: [
-                      SizedBox(child: ErrorDonutChart(errorData: errorList)),
-                    ],
-                  ),
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: secondaryCardColor,
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color.fromARGB(255, 215, 210, 210),
+                            offset: const Offset(5.0, 5.0), //Offset
+                            blurRadius: 10.0,
+                            spreadRadius: 2.0,
+                          ),
+                        ],
+                      ),
+                    
+                      child: Column(
+                        children: [
+                          SizedBox(child: ErrorDonutChart(errorData: errorList)),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),

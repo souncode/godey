@@ -21,7 +21,7 @@ class ChartShow extends StatelessWidget {
               : Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: secondaryColor,
+                  color: secondaryCardColor,
                 ),
                 child: SfCartesianChart(
                   title: ChartTitle(

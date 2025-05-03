@@ -9,7 +9,7 @@ class ErrorDonutChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SfCircularChart(
-      title: ChartTitle(text: 'OEE'),
+      title: ChartTitle(text: 'Overall Equipment Effectiveness'),
       legend: Legend(
         isVisible: true,
         overflowMode: LegendItemOverflowMode.wrap,
