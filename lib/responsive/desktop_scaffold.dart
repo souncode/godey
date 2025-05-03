@@ -87,17 +87,28 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                               border:OutlineInputBorder(
                                 borderSide: BorderSide.none,
                                 borderRadius: BorderRadius.all(Radius.circular(10))
+                              ),
+                              suffixIcon: InkWell(
+                                onTap: (){},
+                                child: Container(
+                                 decoration: BoxDecoration(
+                                  color: secondaryColor,
+                                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                                  
+                                 ),child: Icon(Icons.search,color: textColor,),
+                                ),
                               )
                             ),
                           ),
                         ),))
                     ],
-                    ),
+                    ),SizedBox(height: 20),
                     if (currentLine.isNotEmpty)
                       Column(
                         children: [Row(
                     children: [
                       Text("Devices"),
+                      SizedBox(height: 30,)
                     ],
                   ),
                           AllCharts(lineId: currentLine),
@@ -123,13 +134,21 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   children: [
-                    Container(
-                      child: Text(
-                        style: TextStyle(
-                        
+                    Column(
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              child: Text(
+                                style: TextStyle(
+                                
+                                ),
+                                "Total"
+                              ),
+                            ),
+                          ],
                         ),
-                        "Total"
-                      ),
+                      ],
                     ),
                     Container(
                       decoration: BoxDecoration(
