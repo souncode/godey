@@ -56,10 +56,7 @@ Widget myDrawer(
         children: [
           const DrawerHeader(child: Icon(Icons.heart_broken)),
           Expanded(
-            child: LineListWidget(
-              key: _listKey,
-              onLineTap: onLineSelected, // ✅ THÊM DÒNG NÀY
-            ),
+            child: LineListWidget(key: _listKey, onLineTap: onLineSelected),
           ),
           ListTile(
             leading: const Icon(Icons.add),
@@ -99,10 +96,7 @@ Widget myDesktopDrawer(
           ),
         ),
         Expanded(
-          child: LineListWidget(
-            key: _listKey,
-            onLineTap: onLineSelected, // ✅ THÊM DÒNG NÀY
-          ),
+          child: LineListWidget(key: _listKey, onLineTap: onLineSelected),
         ),
         ListTile(
           leading: const Icon(Icons.add),

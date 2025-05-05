@@ -70,9 +70,11 @@ class LineListWidgetState extends State<LineListWidget> {
         final lines = snapshot.data!;
         return ListView.builder(
           itemCount: lines.length,
+
           itemBuilder: (context, index) {
             final line = lines[index];
             return ListTile(
+              hoverColor: Colors.white,
               leading: const Icon(Icons.monitor_heart),
               title: Text(
                 line['name'].toString().toUpperCase(),
@@ -82,7 +84,7 @@ class LineListWidgetState extends State<LineListWidget> {
                 ),
               ),
               onTap: () {
-                widget.onLineTap(line['id']); // ✅ Gọi callback
+                widget.onLineTap(line['id']);
               },
             );
           },
