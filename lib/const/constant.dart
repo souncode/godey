@@ -48,8 +48,31 @@ void registerLine(String name) async {
     print(stackTrace);
   }
 }
+void addDevice(String line,String stat,String type,String time) async {
+  try {
+    var regBody = {"line": line,"stat":stat,"type":type,"time":time};
+    var response = await http.post(
+      Uri.parse(registrationdv),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode(regBody),
+    );
+
+    if (response.statusCode == 200) {
+      print("Success: ${response.body}");
+    } else {
+      print("Error: ${response.statusCode} - ${response.body}");
+    }
+  } catch (e, stackTrace) {
+    print("Exception: $e");
+    print(stackTrace);
+  }
+}
+
 
 late TextEditingController registerController;
+late TextEditingController LineIDController;
+late TextEditingController statController;
+late TextEditingController typeController;
 void testConnection() async {
   try {
     var response = await http.get(Uri.parse(url));
@@ -158,4 +181,55 @@ Future registerLineDialog(context) => showDialog(
         ],
       ),
 );
+
+
+Future registerDeviceDialog(context,LineIDController,statController,typeController,String LineNow) => showDialog(
+  context: context,
+  builder:
+      (context) => AlertDialog(
+        title: Column(
+          children: [
+            Text('Add Device',
+            style: TextStyle(
+              fontWeight: FontWeight.bold
+            ),
+            ),
+          ],
+        ),
+        content: Column(
+          children: [
+            TextField(
+              controller: LineIDController,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: "Line ID",
+                
+                hintText: LineNow),
+            ),SizedBox(height: 20,),            TextField(
+              controller: statController,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: "Station",
+                hintText: 'Enter Station'),
+            ),SizedBox(height: 20,), 
+            TextField(
+              controller: typeController,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: "Device Type",
+                hintText: 'Enter Type'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              addDevice(LineIDController.text==null?LineNow:LineIDController.text,statController.text,typeController.text,DateTime.now().toString());
+            },
+            child: Text('Add'),
+          ),
+        ],
+      ),
+);
+
 

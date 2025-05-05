@@ -144,7 +144,11 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                               backgroundColor: cardBackgroundColor,
                               foregroundColor: Colors.white,
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                                LineIDController = TextEditingController();
+                                statController = TextEditingController();
+                                typeController = TextEditingController();
+                              registerDeviceDialog(context,LineIDController,statController,typeController,currentLine);},
                             child: Icon(Icons.add_chart),
                           )
                         )
@@ -194,14 +198,12 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                         children: [
                           Row(
                             children: [
-                              Container(
-                                child: Text(
-                                  style: TextStyle(
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  "Total part",
+                              Text(
+                                style: TextStyle(
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.bold,
                                 ),
+                                "Total part",
                               ),
                             ],
                           ),
