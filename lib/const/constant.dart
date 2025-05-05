@@ -3,8 +3,9 @@ import 'package:flutter/cupertino.dart';
 const cardBackgroundColor = Color.fromARGB(255, 28, 29, 33);
 const primaryColor = Color(0xff2697ff);
 const secondaryColor = Color.fromARGB(255, 28, 29, 33);
-const secondaryCardColor = Color.fromARGB(255, 238, 240, 242);
-const backgroundColor = Color(0xFF8F8F8F8);
+const secondaryCardColor = Color.fromARGB(255, 28, 29, 33);
+
+const backgroundColor = Color.fromARGB(248, 255, 255, 255);
 const selectionColor = Color(0xff88b2ac);
 const textColor = Color.fromARGB(255, 181, 183, 192);
 const defaultPadding = 20.0;
