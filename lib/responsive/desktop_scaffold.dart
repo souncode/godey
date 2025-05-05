@@ -3,6 +3,7 @@ import 'package:godey/const/constant.dart';
 
 import 'package:godey/widgets/all_chart.dart';
 import 'package:godey/widgets/donut_chart.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 class DesktopScaffold extends StatefulWidget {
   const DesktopScaffold({super.key});
@@ -118,6 +119,36 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                         ),
                       ],
                     ),
+                  ),Row(
+                    children: [
+                      Container(
+                        height: 32,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(2),
+                          color: cardBackgroundColor
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text("Devices", style: TextStyle(
+                                
+                                color: textWhiteColor
+                              )),
+                        )),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child:  ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(3), // bỏ bo tròn
+    ),
+                              backgroundColor: cardBackgroundColor,
+                              foregroundColor: Colors.white,
+                            ),
+                            onPressed: () {},
+                            child: Icon(Icons.add_chart),
+                          )
+                        )
+                    ],
                   ),
 
                   Expanded(
@@ -131,7 +162,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                               ? Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text("Devices"),
+                                  
                                   SizedBox(height: 20),
                                   AllCharts(lineId: currentLine),
                                 ],
@@ -154,131 +185,134 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
 
             Expanded(
               flex: 3,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    Column(
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              child: Text(
-                                style: TextStyle(
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                "Total part",
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 5),
-
-                    Row(children: [Text("Unit"), Icon(Icons.arrow_drop_down)]),
-                    SizedBox(height: 5),
-                    Row(
-                      children: [
-                        Text(
-                          "0802200",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(width: 15),
-                        Text(
-                          "pcs",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blueAccent,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 5),
-                    Row(
-                      children: [
-                        Text(
-                          "P/N :",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(width: 15),
-                        Text(
-                          "XXDLK",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blueAccent,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    Row(
-                      children: [
-  
-                        Expanded(
-                          flex: 2,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(3), // bỏ bo tròn
-    ),
-                              backgroundColor: cardBackgroundColor,
-                              foregroundColor: Colors.white,
-                            ),
-                            onPressed: () {},
-                            child: Text("Done"),
-                          ),
-                        ),
-                        Expanded(flex: 1, child: SizedBox()),
-                        Expanded(
-                          flex: 2,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              foregroundColor: textDarkColor,
-                              shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(3), // bỏ bo tròn
-    ),
-                            ),
-                            onPressed: () {},
-                            child: Text("Reset"),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    Text(
-                      style: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      "Chart",
-                    ),
-                    SizedBox(height: 20),
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: secondaryCardColor,
-                        
-                      ),
-
-                      child: Column(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Column(
                         children: [
-                          SizedBox(
-                            child: ErrorDonutChart(errorData: errorList),
+                          Row(
+                            children: [
+                              Container(
+                                child: Text(
+                                  style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  "Total part",
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
+                      SizedBox(height: 5),
+                
+                      Row(children: [Text("Unit"), Icon(Icons.arrow_drop_down)]),
+                      SizedBox(height: 5),
+                      Row(
+                        children: [
+                          Text(
+                            "0802200",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(width: 15),
+                          Text(
+                            "pcs",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blueAccent,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 5),
+                      Row(
+                        children: [
+                          Text(
+                            "P/N :",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(width: 15),
+                          Text(
+                            "XXDLK",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blueAccent,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20),
+                      Row(
+                        children: [
+                  
+                          Expanded(
+                            flex: 2,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(3), // bỏ bo tròn
                     ),
-                  ],
+                                backgroundColor: cardBackgroundColor,
+                                foregroundColor: Colors.white,
+                              ),
+                              onPressed: () {},
+                              child: Text("Done"),
+                            ),
+                          ),
+                          Expanded(flex: 1, child: SizedBox()),
+                          Expanded(
+                            flex: 2,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: textDarkColor,
+                                shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(3), // bỏ bo tròn
+                    ),
+                              ),
+                              onPressed: () {},
+                              child: Text("Reset"),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20),
+                      Text(
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        "Chart",
+                      ),
+                      SizedBox(height: 20),
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: secondaryCardColor,
+                          
+                        ),
+                
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              child: ErrorDonutChart(errorData: errorList),
+                            ),
+                          ],
+                        ),
+                      ),SizedBox(height: 20,),
+                      TableCalendar(focusedDay: DateTime.now(), firstDay: DateTime.utc(210,10,16), lastDay: DateTime.utc(2099,10,16))
+                    ],
+                  ),
                 ),
               ),
             ),

@@ -1,7 +1,8 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:godey/const/constant.dart';
 import 'package:godey/widgets/line_show.dart';
 import 'package:http/http.dart' as http;
 import 'package:godey/config.dart';
@@ -115,16 +116,22 @@ Widget myDesktopDrawer(
         Expanded(
           child: LineListWidget(key: _listKey, onLineTap: onLineSelected),
         ),
-        ListTile(
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.only(bottomLeft:Radius.circular(10.0),bottomRight:Radius.circular(10.0)),
+            color: Colors.white
+          ),
+          child: ListTile(
           leading: const Icon(Icons.add),
           title: const Text("Add Line",style: TextStyle(
-          color: textWhiteColor
+          color: textDarkColor
         ),),
           onTap: () {
             registerController = TextEditingController();
             registerLineDialog(context);
           },
-        ),
+        ),)
+      
       ],
     ),
   );
