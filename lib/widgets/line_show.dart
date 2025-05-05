@@ -79,7 +79,7 @@ class LineListWidgetState extends State<LineListWidget> {
               title: Text(
                 line['name'].toString().toUpperCase(),
                 style: const TextStyle(
-                  color: textColor,
+                  color: textWhiteColor,
                   fontWeight: FontWeight.bold,
                 ),
               ),

@@ -18,21 +18,22 @@ class AllCharts extends StatefulWidget {
 }
 
 class _AllChartsState extends State<AllCharts> {
-  List<Map<String, dynamic>> chartDataList = []; // mỗi item gồm title + data
+  List<Map<String, dynamic>> chartDataList = []; 
   bool loading = true;
   Timer? _timer;
+  int _duration = 5;
 
   @override
   void initState() {
     super.initState();
     loadAllCharts();
-    // Lặp lại việc tải dữ liệu mỗi 30 giây
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) => loadAllCharts());
+   
+    _timer = Timer.periodic(Duration(seconds: _duration), (timer) => loadAllCharts());
   }
 
   @override
   void dispose() {
-    _timer?.cancel(); // Dọn dẹp khi widget bị hủy
+    _timer?.cancel(); 
     super.dispose();
   }
 
@@ -54,7 +55,6 @@ class _AllChartsState extends State<AllCharts> {
           String title = device['stat'] ?? 'Unknown';
           List<TemperatureData> newData = extractTemperatureData(device);
 
-          // tìm biểu đồ tương ứng đã có
           var existingChart = chartDataList.firstWhere(
             (element) => element['title'] == title,
             orElse: () => {'title': title, 'data': <TemperatureData>[]},

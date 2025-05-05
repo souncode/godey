@@ -26,13 +26,15 @@ class ChartShow extends StatelessWidget {
                 child: SfCartesianChart(
                   title: ChartTitle(
                     text: chartTitle,
-                    textStyle: TextStyle(color: textColor),
+                    textStyle: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color:textDarkColor),
                   ),
                   legend: Legend(
                     isVisible: true,
                     textStyle: TextStyle(
-                      color: textColor, // đổi màu chữ trục X
-                      fontSize: 12, // có thể đổi size luôn
+                      color: textDarkColor,
+                      fontSize: 12, 
                     ),
                   ),
                   tooltipBehavior: TooltipBehavior(enable: true),
@@ -47,19 +49,19 @@ class ChartShow extends StatelessWidget {
                     zoomMode: ZoomMode.x,
                   ),
                   primaryXAxis: DateTimeAxis(
-                    dateFormat: DateFormat.Hms(), // Hiển thị HH:mm:ss
+                    dateFormat: DateFormat.Hms(), 
                     intervalType: DateTimeIntervalType.seconds,
                     edgeLabelPlacement: EdgeLabelPlacement.shift,
                     labelStyle: TextStyle(
-                      color: textColor, // đổi màu chữ trục X
-                      fontSize: 12, // có thể đổi size luôn
+                      color: textDarkColor, 
+                      fontSize: 12, 
                     ),
                   ),
                   primaryYAxis: NumericAxis(
                     labelFormat: '{value}°C',
                     labelStyle: TextStyle(
-                      color: textColor, // đổi màu chữ trục X
-                      fontSize: 12, // có thể đổi size luôn
+                      color: textDarkColor, 
+                      fontSize: 12,
                     ),
                   ),
                   series: _buildSeries(),
@@ -84,6 +86,7 @@ class ChartShow extends StatelessWidget {
         markerSettings: MarkerSettings(isVisible: true),
         dataLabelSettings: DataLabelSettings(isVisible: false),
         enableTooltip: true,
+           animationDuration: 00,
       );
     }).toList();
   }

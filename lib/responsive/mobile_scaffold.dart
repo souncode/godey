@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:godey/responsive/constants.dart';
+import 'package:godey/const/constant.dart';
 import 'package:godey/util/my_box.dart';
 import 'package:godey/util/my_tile.dart';
 class MobileScaffold extends StatefulWidget {

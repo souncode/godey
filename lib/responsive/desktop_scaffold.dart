@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:godey/const/constant.dart';
-import 'package:godey/responsive/constants.dart';
+
 import 'package:godey/widgets/all_chart.dart';
 import 'package:godey/widgets/donut_chart.dart';
 
@@ -43,7 +43,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
             Expanded(
               flex: 2,
               child: Padding(
-                padding: const EdgeInsets.all(30.0),
+                padding: const EdgeInsets.all(10.0),
                 child: myDesktopDrawer(
                   context,
                   onLineSelected: (lineId) {
@@ -69,7 +69,9 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("ADMIN", style: TextStyle()),
+                            Text("ADMIN", style: TextStyle(
+                              fontWeight: FontWeight.bold
+                            )),
                             Row(
                               children: [
                                 Text("Logged", style: TextStyle(fontSize: 8)),
@@ -89,7 +91,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                             child: TextField(
                               decoration: InputDecoration(
                                 hintText: "Search",
-                                hintStyle: TextStyle(color: textColor),
+                                hintStyle: TextStyle(color: textWhiteColor),
                                 fillColor: secondaryCardColor,
                                 filled: true,
                                 border: OutlineInputBorder(
@@ -107,7 +109,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                                         Radius.circular(10),
                                       ),
                                     ),
-                                    child: Icon(Icons.search, color: textColor),
+                                    child: Icon(Icons.search, color: textWhiteColor),
                                   ),
                                 ),
                               ),
@@ -221,12 +223,16 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                     SizedBox(height: 20),
                     Row(
                       children: [
+  
                         Expanded(
                           flex: 2,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(3), // bỏ bo tròn
+    ),
                               backgroundColor: cardBackgroundColor,
-                              foregroundColor: primaryColor,
+                              foregroundColor: Colors.white,
                             ),
                             onPressed: () {},
                             child: Text("Done"),
@@ -237,7 +243,10 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                           flex: 2,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              foregroundColor: primaryColor,
+                              foregroundColor: textDarkColor,
+                              shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(3), // bỏ bo tròn
+    ),
                             ),
                             onPressed: () {},
                             child: Text("Reset"),
@@ -258,13 +267,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                         color: secondaryCardColor,
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color.fromARGB(255, 215, 210, 210),
-                            offset: const Offset(5.0, 5.0),
-                            spreadRadius: 2.0,
-                          ),
-                        ],
+                        
                       ),
 
                       child: Column(
