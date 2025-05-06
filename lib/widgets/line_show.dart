@@ -6,8 +6,9 @@ import 'package:http/http.dart' as http;
 
 class LineListWidget extends StatefulWidget {
   final void Function(String) onLineTap;
+    final void Function(String) onLineNameTap;
 
-  const LineListWidget({super.key, required this.onLineTap});
+  const LineListWidget({super.key, required this.onLineTap,required this.onLineNameTap});
 
   @override
   State<LineListWidget> createState() => LineListWidgetState();
@@ -85,6 +86,7 @@ class LineListWidgetState extends State<LineListWidget> {
               ),
               onTap: () {
                 widget.onLineTap(line['id']);
+                widget.onLineNameTap(line['name']);
               },
             );
           },

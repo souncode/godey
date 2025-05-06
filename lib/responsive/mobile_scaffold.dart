@@ -10,6 +10,7 @@ class MobileScaffold extends StatefulWidget {
 }
 
 String currentLine = "";
+String currentLineName = "";
 class _MobileScaffoldState extends State<MobileScaffold> {
   @override
   Widget build(BuildContext context) {
@@ -23,6 +24,11 @@ class _MobileScaffoldState extends State<MobileScaffold> {
       currentLine = lineId;
     });
   },
+   onLineNameSelected: (lineName) {
+                    setState(() {
+                      currentLineName = lineName;
+                    });
+                  },
 ),
       body: Column(
         children: [

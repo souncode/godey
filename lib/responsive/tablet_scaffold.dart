@@ -5,7 +5,6 @@ import 'package:godey/config.dart';
 import 'package:godey/const/constant.dart';
 import 'package:godey/responsive/desktop_scaffold.dart';
 
-import 'package:godey/widgets/chart_card.dart';
 import 'package:http/http.dart' as http;
 
 import '../widgets/all_chart.dart';
@@ -19,6 +18,7 @@ class TabletScaffold extends StatefulWidget {
 }
 
 String currentLine = "";
+String currentLineName = "";
 String lineta = "67df1eee847d020add50949f";
 void getDevice(line) async {
   try {
@@ -92,8 +92,13 @@ class _TabletScaffoldState extends State<TabletScaffold> {
             currentLine = lineId;
           });
         },
+        onLineNameSelected: (lineName) {
+          setState(() {
+            currentLineName = lineName;
+          });
+        },
       ),
-      body:Container(
+      body: Container(
         color: backgroundColor,
         padding: EdgeInsets.all(20),
         child: Row(
@@ -112,9 +117,10 @@ class _TabletScaffoldState extends State<TabletScaffold> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("ADMIN", style: TextStyle(
-                              fontWeight: FontWeight.bold
-                            )),
+                            Text(
+                              "ADMIN",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
                             Row(
                               children: [
                                 Text("Logged", style: TextStyle(fontSize: 8)),
@@ -152,7 +158,10 @@ class _TabletScaffoldState extends State<TabletScaffold> {
                                         Radius.circular(10),
                                       ),
                                     ),
-                                    child: Icon(Icons.search, color: textWhiteColor),
+                                    child: Icon(
+                                      Icons.search,
+                                      color: textWhiteColor,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -161,35 +170,86 @@ class _TabletScaffoldState extends State<TabletScaffold> {
                         ),
                       ],
                     ),
-                  ),Row(
+                  ),
+                  Row(
                     children: [
                       Container(
                         height: 32,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(2),
-                          color: cardBackgroundColor
+                          color: cardBackgroundColor,
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Text("Devices", style: TextStyle(
-                                
-                                color: textWhiteColor
-                              )),
-                        )),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child:  ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(3), // bỏ bo tròn
-    ),
-                              backgroundColor: cardBackgroundColor,
-                              foregroundColor: Colors.white,
+                          child: Text(
+                            "Devices",
+                            style: TextStyle(color: textWhiteColor),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(3),
                             ),
-                            onPressed: () {},
-                            child: Icon(Icons.add_chart),
+                            backgroundColor: cardBackgroundColor,
+                            foregroundColor: Colors.white,
+                          ),
+                          onPressed: () {
+                            LineIDController = TextEditingController();
+                            statController = TextEditingController();
+                            typeController = TextEditingController();
+                            print("Current line : " + currentLine);
+                            if (currentLine == "") {
+                              registerDeviceErrDialog(context);
+                            } else {
+                              registerDeviceDialog(
+                                context,
+                                LineIDController,
+                                statController,
+                                typeController,
+                                currentLine,
+                              );
+                            }
+                          },
+                          child: Icon(Icons.add_chart),
+                        ),
+                      ),
+
+                      (currentLine != "")
+                          ? Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(3),
+                                ),
+                                backgroundColor: cardBackgroundColor,
+                                foregroundColor: Colors.white,
+                              ),
+                              onPressed: () {},
+                              child: Text("ID : " + currentLine),
+                            ),
                           )
-                        )
+                          : SizedBox(),
+                      (currentLine != "")
+                          ? Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(3),
+                                ),
+                                backgroundColor: cardBackgroundColor,
+                                foregroundColor: Colors.white,
+                              ),
+                              onPressed: () {},
+                              child: Text(currentLineName.toUpperCase()),
+                            ),
+                          )
+                          : SizedBox(),
                     ],
                   ),
 
@@ -204,7 +264,6 @@ class _TabletScaffoldState extends State<TabletScaffold> {
                               ? Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  
                                   SizedBox(height: 20),
                                   AllCharts(lineId: currentLine),
                                 ],
@@ -212,9 +271,9 @@ class _TabletScaffoldState extends State<TabletScaffold> {
                               : const Padding(
                                 padding: EdgeInsets.all(20.0),
                                 child: Text(
-                                  "Chọn một line để hiển thị biểu đồ",
+                                  "Select a line to show chart",
                                   style: TextStyle(
-                                    color: Colors.white,
+                                    color: textDarkColor,
                                     fontSize: 18,
                                   ),
                                 ),
@@ -227,31 +286,31 @@ class _TabletScaffoldState extends State<TabletScaffold> {
 
             Expanded(
               flex: 3,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SingleChildScrollView(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
                   child: Column(
                     children: [
                       Column(
                         children: [
                           Row(
                             children: [
-                              Container(
-                                child: Text(
-                                  style: TextStyle(
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  "Total part",
+                              Text(
+                                style: TextStyle(
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.bold,
                                 ),
+                                "Total part",
                               ),
                             ],
                           ),
                         ],
                       ),
                       SizedBox(height: 5),
-                  
-                      Row(children: [Text("Unit"), Icon(Icons.arrow_drop_down)]),
+
+                      Row(
+                        children: [Text("Unit"), Icon(Icons.arrow_drop_down)],
+                      ),
                       SizedBox(height: 5),
                       Row(
                         children: [
@@ -297,14 +356,13 @@ class _TabletScaffoldState extends State<TabletScaffold> {
                       SizedBox(height: 20),
                       Row(
                         children: [
-                    
                           Expanded(
                             flex: 2,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(3), 
-                      ),
+                                  borderRadius: BorderRadius.circular(3),
+                                ),
                                 backgroundColor: cardBackgroundColor,
                                 foregroundColor: Colors.white,
                               ),
@@ -319,8 +377,8 @@ class _TabletScaffoldState extends State<TabletScaffold> {
                               style: ElevatedButton.styleFrom(
                                 foregroundColor: textDarkColor,
                                 shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(3), // bỏ bo tròn
-                      ),
+                                  borderRadius: BorderRadius.circular(3),
+                                ),
                               ),
                               onPressed: () {},
                               child: Text("Reset"),
@@ -341,9 +399,8 @@ class _TabletScaffoldState extends State<TabletScaffold> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           color: secondaryCardColor,
-                          
                         ),
-                  
+
                         child: Column(
                           children: [
                             SizedBox(
@@ -352,7 +409,12 @@ class _TabletScaffoldState extends State<TabletScaffold> {
                           ],
                         ),
                       ),
-                      TableCalendar(focusedDay: DateTime.now(), firstDay: DateTime.utc(210,10,16), lastDay: DateTime.utc(2099,10,16))
+                      SizedBox(height: 20),
+                      TableCalendar(
+                        focusedDay: DateTime.now(),
+                        firstDay: DateTime.utc(210, 10, 16),
+                        lastDay: DateTime.utc(2099, 10, 16),
+                      ),
                     ],
                   ),
                 ),
