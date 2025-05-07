@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:godey/config.dart';
+import 'package:godey/services/log_service.dart';
 import 'package:godey/widgets/chart_show.dart';
 import 'package:http/http.dart' as http;
 
@@ -81,9 +82,11 @@ class _AllChartsState extends State<AllCharts> {
           loading = false;
         });
       } else {
+        LogService().add("Failed to load: ${response.body}");
         print("Failed to load: ${response.body}");
       }
     } catch (e) {
+      LogService().add("Exception: $e");
       print("Exception: $e");
     }
   }

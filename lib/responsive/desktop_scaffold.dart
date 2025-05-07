@@ -65,8 +65,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                   onLineSelected: (lineId) {
                     setState(() {
                       currentLine = lineId;
-
-                      LogService().add("Đã kết nối MQTT");
+                      LogService().add("Line Seleted");
                     });
                   },
                   onLineNameSelected: (lineName) {
@@ -390,17 +389,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                         firstDay: DateTime.utc(210, 10, 16),
                         lastDay: DateTime.utc(2099, 10, 16),
                       ),
-                      Container(
-                        width: double.infinity,
-                        height: MediaQuery.of(context).size.height * 0.8,
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.black,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child:
-                            const DebugConsoleScreen(), // hoặc build nội dung trực tiếp
-                      ),
+                      myDebugConsole(context),
                     ],
                   ),
                 ),

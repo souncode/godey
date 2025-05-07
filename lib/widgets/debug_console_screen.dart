@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:godey/const/constant.dart';
 import '../services/log_service.dart';
 
 class DebugConsoleScreen extends StatefulWidget {
@@ -20,8 +21,6 @@ class _DebugConsoleScreenState extends State<DebugConsoleScreen> {
 
   void _onLogUpdated() {
     if (mounted) setState(() {});
-
-    // Tự động cuộn xuống cuối
     Future.delayed(const Duration(milliseconds: 100), () {
       if (_scrollController.hasClients) {
         _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
@@ -41,16 +40,29 @@ class _DebugConsoleScreenState extends State<DebugConsoleScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Debug Console"),
-        backgroundColor: Colors.black87,
+        backgroundColor: secondaryColor,
+        title: Row(
+          children: [
+            Icon(Icons.bug_report_sharp, color: Colors.redAccent),
+            SizedBox(width: 20),
+            Text(
+              "Debug Console",
+              style: TextStyle(
+                color: Colors.lightGreenAccent,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+
         actions: [
           IconButton(
-            icon: const Icon(Icons.clear),
+            icon: const Icon(Icons.delete, color: Colors.amberAccent),
             onPressed: () => _logService.clear(),
           ),
         ],
       ),
-      backgroundColor: Colors.black,
+      backgroundColor: secondaryColor,
       body: ListView.builder(
         controller: _scrollController,
         itemCount: logs.length,
@@ -60,10 +72,6 @@ class _DebugConsoleScreenState extends State<DebugConsoleScreen> {
             style: const TextStyle(color: Colors.greenAccent, fontSize: 14),
           );
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _logService.add("User manually added a log"),
-        child: const Icon(Icons.add),
       ),
     );
   }

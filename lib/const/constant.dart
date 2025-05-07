@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:godey/services/log_service.dart';
 import 'package:godey/widgets/line_show.dart';
 import 'package:http/http.dart' as http;
 import 'package:godey/config.dart';
@@ -29,7 +30,7 @@ var myAppBar = AppBar(
   backgroundColor: secondaryColor,
 );
 
-void registerLine(String name) async {
+Future<bool> registerLine(String name) async {
   try {
     var regBody = {"name": name};
     var response = await http.post(
@@ -39,20 +40,81 @@ void registerLine(String name) async {
     );
 
     if (response.statusCode == 200) {
-      print("Success: ${response.body}");
+      final data = jsonDecode(response.body);
+      if (data['status'] == true) {
+        LogService().add(
+          "Line registration successful: ${data['message'] ?? response.body}",
+        );
+        return true;
+      } else {
+        LogService().add(
+          "Line registration failed: ${data['message'] ?? 'Unknown error'}",
+        );
+        return false;
+      }
     } else {
-      print("Error: ${response.statusCode} - ${response.body}");
+      LogService().add("HTTP error ${response.statusCode}: ${response.body}");
+      return false;
     }
   } catch (e, stackTrace) {
     print("Exception: $e");
-    print(stackTrace);
+    LogService().add("Exception during register line: $e");
+    LogService().add("StackTrace: $stackTrace");
+    return false;
+  }
+}
+
+Future<bool> DeleteLine(String id) async {
+  try {
+    final response = await http.post(
+      Uri.parse(deleteLine),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"id": id}),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data['status'] == true) {
+        LogService().add("Deleted line with ID $id successfully.");
+        return true;
+      } else {
+        LogService().add(
+          "Delete line failed: ${data['message'] ?? 'Unknown error'}",
+        );
+        return false;
+      }
+    } else {
+      LogService().add("Delete line failed with status ${response.statusCode}");
+      return false;
+    }
+  } catch (e) {
+    LogService().add("Exception during delete line: $e");
+    return false;
   }
 }
 
 void addDevice(String line, String stat, String type, String time) async {
   try {
+    var regBody;
+    LogService().add("On select line :" + line);
     print("On select line :" + line);
-    var regBody = {"line": line, "stat": stat, "type": type, "time": time};
+    if (type == "tempctrl") {
+      regBody = {
+        "line": line,
+        "stat": stat,
+        "type": type,
+        "time": time,
+        "ctrl": [
+          {"inde": "Test1", "temp": "49", "setv": "20", "offs": "2"},
+          {"inde": "Test2", "temp": "39", "setv": "20", "offs": "2"},
+          {"inde": "Test3", "temp": "29", "setv": "20", "offs": "2"},
+          {"inde": "Test4", "temp": "19", "setv": "20", "offs": "2"},
+        ],
+      };
+    } else {
+      regBody = {"line": line, "stat": stat, "type": type, "time": time};
+    }
+
     var response = await http.post(
       Uri.parse(registrationdv),
       headers: {"Content-Type": "application/json"},
@@ -61,12 +123,16 @@ void addDevice(String line, String stat, String type, String time) async {
 
     if (response.statusCode == 200) {
       print("Success: ${response.body}");
+      LogService().add("Success: ${response.body}");
     } else {
+      LogService().add("Error: ${response.statusCode} - ${response.body}");
       print("Error: ${response.statusCode} - ${response.body}");
     }
   } catch (e, stackTrace) {
-    print("Exception: $e");
-    print(stackTrace);
+    LogService().add("Exception: $e");
+    LogService().add(stackTrace as String);
+    LogService().add("Exception: $e");
+    LogService().add(stackTrace as String);
   }
 }
 
@@ -78,6 +144,19 @@ void testConnection() async {
   } catch (e) {
     print("Error: $e");
   }
+}
+
+Widget myDebugConsole(BuildContext context) {
+  return Container(
+    width: double.infinity,
+    height: MediaQuery.of(context).size.height * 0.8,
+    padding: const EdgeInsets.all(5),
+    decoration: BoxDecoration(
+      color: secondaryColor,
+      borderRadius: BorderRadius.circular(16),
+    ),
+    child: const DebugConsoleScreen(), // hoặc build nội dung trực tiếp
+  );
 }
 
 Widget myDrawer(
@@ -99,45 +178,16 @@ Widget myDrawer(
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.bug_report),
-            title: const Text("Debug Console"),
-            onTap: () {
-              openDebugConsole(context);
-            },
-          ),
-          ListTile(
             leading: const Icon(Icons.add),
             title: const Text("Add Line"),
             onTap: () {
               registerController = TextEditingController();
               registerLineDialog(context);
-              Navigator.pop(context, true);
             },
           ),
         ],
       ),
     ),
-  );
-}
-
-void openDebugConsole(BuildContext context) {
-  showDialog(
-    context: context,
-    builder:
-        (context) => Dialog(
-          backgroundColor: Colors.transparent,
-          insetPadding: const EdgeInsets.all(16),
-          child: Container(
-            width: double.infinity,
-            height: MediaQuery.of(context).size.height * 0.8,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: const DebugConsoleScreen(), // hoặc build nội dung trực tiếp
-          ),
-        ),
   );
 }
 
@@ -189,7 +239,6 @@ Widget myDesktopDrawer(
             onTap: () {
               registerController = TextEditingController();
               registerLineDialog(context);
-              Navigator.pop(context, true);
             },
           ),
         ),
@@ -210,9 +259,20 @@ Future registerLineDialog(context) => showDialog(
         actions: [
           TextButton(
             onPressed: () async {
-              registerLine(registerController.text);
-              _listKey.currentState?.refreshLines();
-              Navigator.pop(context, true);
+              final success = await registerLine(registerController.text);
+              if (success) {
+                _listKey.currentState?.refreshLines();
+                Navigator.pop(context, true);
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(const SnackBar(content: Text('Line Added')));
+              } else {
+                // Optionally hiển thị thông báo lỗi
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Failed to fetch line')),
+                );
+                Navigator.pop(context, true);
+              }
             },
             child: Text('Register'),
           ),

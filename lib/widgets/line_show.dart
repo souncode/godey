@@ -2,13 +2,19 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:godey/config.dart';
 import 'package:godey/const/constant.dart';
+import 'package:godey/services/log_service.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:http/http.dart' as http;
 
 class LineListWidget extends StatefulWidget {
   final void Function(String) onLineTap;
-    final void Function(String) onLineNameTap;
+  final void Function(String) onLineNameTap;
 
-  const LineListWidget({super.key, required this.onLineTap,required this.onLineNameTap});
+  const LineListWidget({
+    super.key,
+    required this.onLineTap,
+    required this.onLineNameTap,
+  });
 
   @override
   State<LineListWidget> createState() => LineListWidgetState();
@@ -20,6 +26,7 @@ Future<List<Map<String, dynamic>>> fetchLines() async {
 
     if (response.statusCode == 200) {
       var decoded = jsonDecode(response.body);
+      LogService().add("Fetch line success");
       if (decoded['status'] == true && decoded['success'] is List) {
         List<dynamic> data = decoded['success'];
         return data
@@ -31,11 +38,13 @@ Future<List<Map<String, dynamic>>> fetchLines() async {
       }
       return [];
     } else {
+      LogService().add("Error: ${response.statusCode}");
       print("Error: ${response.statusCode}");
       return [];
     }
   } catch (e) {
     print("Exception: $e");
+    LogService().add("Exception: $e");
     return [];
   }
 }
@@ -74,20 +83,49 @@ class LineListWidgetState extends State<LineListWidget> {
 
           itemBuilder: (context, index) {
             final line = lines[index];
-            return ListTile(
-              hoverColor: Colors.white,
-              leading: const Icon(Icons.monitor_heart),
-              title: Text(
-                line['name'].toString().toUpperCase(),
-                style: const TextStyle(
-                  color: textWhiteColor,
-                  fontWeight: FontWeight.bold,
-                ),
+            return Slidable(
+              key: const ValueKey(0),
+
+              endActionPane: ActionPane(
+                motion: const ScrollMotion(),
+                children: [
+                  SlidableAction(
+                    onPressed: (_) async {
+                      final success = await DeleteLine(line['id']);
+                      if (success) {
+                        refreshLines(); // Làm mới danh sách nếu xoá thành công
+                      } else {
+                        // Optionally hiển thị thông báo lỗi
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Failed to delete line'),
+                          ),
+                        );
+                      }
+                    },
+                    backgroundColor: const Color(0xFFFE4A49),
+                    foregroundColor: Colors.white,
+                    icon: Icons.delete,
+                    label: 'Delete',
+                  ),
+                ],
               ),
-              onTap: () {
-                widget.onLineTap(line['id']);
-                widget.onLineNameTap(line['name']);
-              },
+              child: ListTile(
+                hoverColor: Colors.white,
+                leading: const Icon(Icons.monitor_heart),
+                trailing: const Icon(Icons.arrow_left),
+                title: Text(
+                  line['name'].toString().toUpperCase(),
+                  style: const TextStyle(
+                    color: textWhiteColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                onTap: () {
+                  widget.onLineTap(line['id']);
+                  widget.onLineNameTap(line['name']);
+                },
+              ),
             );
           },
         );
