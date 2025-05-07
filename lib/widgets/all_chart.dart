@@ -18,7 +18,7 @@ class AllCharts extends StatefulWidget {
 }
 
 class _AllChartsState extends State<AllCharts> {
-  List<Map<String, dynamic>> chartDataList = []; 
+  List<Map<String, dynamic>> chartDataList = [];
   bool loading = true;
   Timer? _timer;
   int _duration = 5;
@@ -27,13 +27,16 @@ class _AllChartsState extends State<AllCharts> {
   void initState() {
     super.initState();
     loadAllCharts();
-   
-    _timer = Timer.periodic(Duration(seconds: _duration), (timer) => loadAllCharts());
+
+    _timer = Timer.periodic(
+      Duration(seconds: _duration),
+      (timer) => loadAllCharts(),
+    );
   }
 
   @override
   void dispose() {
-    _timer?.cancel(); 
+    _timer?.cancel();
     super.dispose();
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:godey/const/constant.dart';
 
 import 'package:godey/widgets/all_chart.dart';
@@ -29,12 +30,23 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: secondaryColor,
-        title: const Text(
-          'Desktop scaffold',
-          style: TextStyle(
-            color: Colors.cyanAccent,
-            fontWeight: FontWeight.w900,
-          ),
+        title: Row(
+          children: [
+            SvgPicture.asset(
+              'lib/assets/images/sown_logo.svg',
+              width: 50,
+              height: 50,
+              color: Colors.white,
+            ),
+            SizedBox(width: 100),
+            const Text(
+              'Desktop scaffold',
+              style: TextStyle(
+                color: Colors.cyanAccent,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ],
         ),
       ),
       body: Container(
