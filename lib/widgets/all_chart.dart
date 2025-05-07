@@ -57,11 +57,17 @@ class _AllChartsState extends State<AllCharts> {
 
         for (var device in devices) {
           String title = device['stat'] ?? 'Unknown';
+          String dvID = device['_id'] ?? 'Unknown';
           List<TemperatureData> newData = extractTemperatureData(device);
 
           var existingChart = chartDataList.firstWhere(
             (element) => element['title'] == title,
-            orElse: () => {'title': title, 'data': <TemperatureData>[]},
+            orElse:
+                () => {
+                  'title': title,
+                  '_id': dvID,
+                  'data': <TemperatureData>[],
+                },
           );
 
           List<TemperatureData> combinedData = List<TemperatureData>.from(
@@ -74,7 +80,7 @@ class _AllChartsState extends State<AllCharts> {
             combinedData = combinedData.sublist(combinedData.length - 300);
           }
 
-          updatedList.add({'title': title, 'data': combinedData});
+          updatedList.add({'title': title, '_id': dvID, 'data': combinedData});
         }
 
         setState(() {
@@ -121,6 +127,7 @@ class _AllChartsState extends State<AllCharts> {
               chartDataList
                   .map(
                     (chart) => ChartShow(
+                      chartID: chart['_id'],
                       chartTitle: chart['title'],
                       tempData: chart['data'],
                     ),

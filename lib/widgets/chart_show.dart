@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:godey/const/constant.dart';
+import 'package:godey/services/log_service.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../model/ctrl_model.dart';
@@ -8,9 +9,14 @@ import 'package:intl/intl.dart';
 
 class ChartShow extends StatelessWidget {
   final String chartTitle;
+  final String chartID;
   final List<TemperatureData> tempData;
 
-  ChartShow({required this.chartTitle, required this.tempData});
+  ChartShow({
+    required this.chartTitle,
+    required this.tempData,
+    required this.chartID,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,24 +27,38 @@ class ChartShow extends StatelessWidget {
               ? Center(child: CircularProgressIndicator())
               : Slidable(
                 key: const ValueKey(0),
-
+                startActionPane: ActionPane(
+                  motion: const DrawerMotion(),
+                  children: [
+                    SlidableAction(
+                      onPressed: (BuildContext context) {
+                        print("Edit");
+                      },
+                      backgroundColor: Color.fromARGB(255, 26, 183, 99),
+                      foregroundColor: Colors.white,
+                      icon: Icons.edit,
+                      label: 'Edit',
+                    ),
+                  ],
+                ),
                 endActionPane: ActionPane(
                   motion: const ScrollMotion(),
                   children: [
                     SlidableAction(
                       onPressed: (_) async {
-                        /*
-                    //  final success = await DeleteLine(line['id']);
-                      if (success) {
-                       // refreshLines(); // Làm mới danh sách nếu xoá thành công
-                      } else {
-                        // Optionally hiển thị thông báo lỗi
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Failed to delete line'),
-                          ),
-                        );
-                      }*/
+                        LogService().add("Chart ID: ${chartID}");
+                        final success = await DeleteDevice(chartID);
+                        if (success) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Deleted evice')),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Failed to delete Device'),
+                            ),
+                          );
+                        }
                       },
                       backgroundColor: const Color(0xFFFE4A49),
                       foregroundColor: Colors.white,

@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:godey/config.dart';
 import 'package:godey/widgets/debug_console_screen.dart';
 
+const godKillerPassWord ="080200";
 const cardBackgroundColor = Color(0xFF2F2F33);
 const primaryColor = Color(0xff2697ff);
 const backgroundColor = Color.fromARGB(248, 255, 255, 255);
@@ -29,6 +30,16 @@ var myAppBar = AppBar(
   iconTheme: IconThemeData(color: Colors.white),
   backgroundColor: secondaryColor,
 );
+
+void testConnection() async {
+  try {
+    var response = await http.get(Uri.parse(url));
+    print("Status Code: ${response.statusCode}");
+    print("Response: ${response.body}");
+  } catch (e) {
+    print("Error: $e");
+  }
+}
 
 Future<bool> registerLine(String name) async {
   try {
@@ -93,11 +104,49 @@ Future<bool> DeleteLine(String id) async {
   }
 }
 
-void addDevice(String line, String stat, String type, String time) async {
+Future<bool> DeleteDevice(String id) async {
   try {
-    var regBody;
-    LogService().add("On select line :" + line);
-    print("On select line :" + line);
+    final response = await http.post(
+      Uri.parse(deleteDevice),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"id": id}),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data['status'] == true) {
+        LogService().add("Deleted device with ID $id successfully.");
+        return true;
+      } else {
+        LogService().add(
+          "Delete device failed: ${data['message'] ?? 'Unknown error'}",
+        );
+        return false;
+      }
+    } else {
+      LogService().add(
+        "Delete device failed with status ${response.statusCode}",
+      );
+      return false;
+    }
+  } catch (e) {
+    LogService().add("Exception during delete line: $e");
+    return false;
+  }
+}
+
+Future<bool> addDevice(
+  String line,
+  String stat,
+  String type,
+  String time,
+) async {
+  try {
+    Map<String, dynamic> regBody;
+
+    LogService().add("On select line: $line");
+    print("On select line: $line");
+
     if (type == "tempctrl") {
       regBody = {
         "line": line,
@@ -115,34 +164,34 @@ void addDevice(String line, String stat, String type, String time) async {
       regBody = {"line": line, "stat": stat, "type": type, "time": time};
     }
 
-    var response = await http.post(
+    final response = await http.post(
       Uri.parse(registrationdv),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(regBody),
     );
 
     if (response.statusCode == 200) {
-      print("Success: ${response.body}");
-      LogService().add("Success: ${response.body}");
+      final data = jsonDecode(response.body);
+      if (data['status'] == true) {
+        LogService().add(
+          "Device registration successful: ${data['message'] ?? response.body}",
+        );
+        return true;
+      } else {
+        LogService().add(
+          "Device registration failed: ${data['message'] ?? 'Unknown error'}",
+        );
+        return false;
+      }
     } else {
-      LogService().add("Error: ${response.statusCode} - ${response.body}");
-      print("Error: ${response.statusCode} - ${response.body}");
+      LogService().add("HTTP error ${response.statusCode}: ${response.body}");
+      return false;
     }
   } catch (e, stackTrace) {
+    print("Exception: $e");
     LogService().add("Exception: $e");
-    LogService().add(stackTrace as String);
-    LogService().add("Exception: $e");
-    LogService().add(stackTrace as String);
-  }
-}
-
-void testConnection() async {
-  try {
-    var response = await http.get(Uri.parse(url));
-    print("Status Code: ${response.statusCode}");
-    print("Response: ${response.body}");
-  } catch (e) {
-    print("Error: $e");
+    LogService().add("StackTrace: $stackTrace");
+    return false;
   }
 }
 
@@ -349,13 +398,22 @@ Future registerDeviceDialog(
                     foregroundColor: Colors.white,
                   ),
                   onPressed: () async {
-                    print("Press :" + (selectedDeviceType ?? ''));
-                    addDevice(
+                    final success = await addDevice(
                       LineNow,
                       statController.text,
                       (selectedDeviceType ?? ''),
                       DateTime.now().toString(),
                     );
+                    if (success) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Added device")),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Add device fail")),
+                      );
+                    }
+
                     Navigator.pop(context, true);
                   },
                   child: Text('Add'),

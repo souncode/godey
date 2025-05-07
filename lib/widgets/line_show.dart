@@ -86,16 +86,30 @@ class LineListWidgetState extends State<LineListWidget> {
             return Slidable(
               key: const ValueKey(0),
 
+              startActionPane: ActionPane(
+                motion: const DrawerMotion(),
+                children: [
+                  SlidableAction(
+                    onPressed: (BuildContext context) {
+                      print("Edit");
+                    },
+                    backgroundColor: Color.fromARGB(255, 26, 183, 99),
+                    foregroundColor: Colors.white,
+                    icon: Icons.edit,
+                    label: 'Edit',
+                  ),
+                ],
+              ),
+
               endActionPane: ActionPane(
-                motion: const ScrollMotion(),
+                motion: const DrawerMotion(),
                 children: [
                   SlidableAction(
                     onPressed: (_) async {
                       final success = await DeleteLine(line['id']);
                       if (success) {
-                        refreshLines(); // Làm mới danh sách nếu xoá thành công
+                        refreshLines();
                       } else {
-                        // Optionally hiển thị thông báo lỗi
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Failed to delete line'),
@@ -110,21 +124,33 @@ class LineListWidgetState extends State<LineListWidget> {
                   ),
                 ],
               ),
-              child: ListTile(
-                hoverColor: Colors.white,
-                leading: const Icon(Icons.monitor_heart),
-                trailing: const Icon(Icons.arrow_left),
-                title: Text(
-                  line['name'].toString().toUpperCase(),
-                  style: const TextStyle(
-                    color: textWhiteColor,
-                    fontWeight: FontWeight.bold,
+              child: Container(
+                color: backgroundColor,
+                child: ListTile(
+                  hoverColor: Colors.white,
+                  leading: const Icon(Icons.monitor_heart),
+                  trailing: Column(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          color: secondaryColor,
+                          child: const Icon(Icons.arrow_left),
+                        ),
+                      ),
+                    ],
                   ),
+                  title: Text(
+                    line['name'].toString().toUpperCase(),
+                    style: const TextStyle(
+                      color: textDarkColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  onTap: () {
+                    widget.onLineTap(line['id']);
+                    widget.onLineNameTap(line['name']);
+                  },
                 ),
-                onTap: () {
-                  widget.onLineTap(line['id']);
-                  widget.onLineNameTap(line['name']);
-                },
               ),
             );
           },
