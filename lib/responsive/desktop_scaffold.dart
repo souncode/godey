@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:godey/const/constant.dart';
 
 import 'package:godey/widgets/all_chart.dart';
+import 'package:godey/widgets/debug_console_screen.dart';
 import 'package:godey/widgets/donut_chart.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '../services/log_service.dart';
@@ -388,6 +389,17 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                         focusedDay: DateTime.now(),
                         firstDay: DateTime.utc(210, 10, 16),
                         lastDay: DateTime.utc(2099, 10, 16),
+                      ),
+                      Container(
+                        width: double.infinity,
+                        height: MediaQuery.of(context).size.height * 0.8,
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.black,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child:
+                            const DebugConsoleScreen(), // hoặc build nội dung trực tiếp
                       ),
                     ],
                   ),
