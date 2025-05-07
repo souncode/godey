@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:godey/const/constant.dart';
-
 import 'package:godey/widgets/all_chart.dart';
-import 'package:godey/widgets/debug_console_screen.dart';
 import 'package:godey/widgets/donut_chart.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '../services/log_service.dart';

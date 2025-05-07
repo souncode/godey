@@ -98,6 +98,7 @@ class _AllChartsState extends State<AllCharts> {
     DateTime now = DateTime.now();
     for (var ctrl in deviceData['ctrl']) {
       if (ctrl['temp'] != null && ctrl['inde'] != null) {
+        print(deviceData['_id'].toString());
         tempData.add(
           TemperatureData(
             time: now,
