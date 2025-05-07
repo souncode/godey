@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:godey/widgets/line_show.dart';
 import 'package:http/http.dart' as http;
 import 'package:godey/config.dart';
+import 'package:godey/widgets/debug_console_screen.dart';
 
 const cardBackgroundColor = Color(0xFF2F2F33);
 const primaryColor = Color(0xff2697ff);
@@ -91,7 +92,18 @@ Widget myDrawer(
         children: [
           const DrawerHeader(child: Icon(Icons.heart_broken)),
           Expanded(
-            child: LineListWidget(key: _listKey, onLineTap: onLineSelected,onLineNameTap: onLineNameSelected),
+            child: LineListWidget(
+              key: _listKey,
+              onLineTap: onLineSelected,
+              onLineNameTap: onLineNameSelected,
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.bug_report),
+            title: const Text("Debug Console"),
+            onTap: () {
+              openDebugConsole(context);
+            },
           ),
           ListTile(
             leading: const Icon(Icons.add),
@@ -105,6 +117,27 @@ Widget myDrawer(
         ],
       ),
     ),
+  );
+}
+
+void openDebugConsole(BuildContext context) {
+  showDialog(
+    context: context,
+    builder:
+        (context) => Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.all(16),
+          child: Container(
+            width: double.infinity,
+            height: MediaQuery.of(context).size.height * 0.8,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: const DebugConsoleScreen(), // hoặc build nội dung trực tiếp
+          ),
+        ),
   );
 }
 
@@ -133,7 +166,11 @@ Widget myDesktopDrawer(
           ),
         ),
         Expanded(
-          child: LineListWidget(key: _listKey, onLineTap: onLineSelected,onLineNameTap: onLineNameSelected),
+          child: LineListWidget(
+            key: _listKey,
+            onLineTap: onLineSelected,
+            onLineNameTap: onLineNameSelected,
+          ),
         ),
         Container(
           decoration: BoxDecoration(
@@ -307,5 +344,3 @@ Future registerDeviceErrDialog(context) => showDialog(
         ],
       ),
 );
-
-

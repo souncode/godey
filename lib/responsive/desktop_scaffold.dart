@@ -5,6 +5,7 @@ import 'package:godey/const/constant.dart';
 import 'package:godey/widgets/all_chart.dart';
 import 'package:godey/widgets/donut_chart.dart';
 import 'package:table_calendar/table_calendar.dart';
+import '../services/log_service.dart';
 
 class DesktopScaffold extends StatefulWidget {
   const DesktopScaffold({super.key});
@@ -63,6 +64,8 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                   onLineSelected: (lineId) {
                     setState(() {
                       currentLine = lineId;
+
+                      LogService().add("Đã kết nối MQTT");
                     });
                   },
                   onLineNameSelected: (lineName) {
