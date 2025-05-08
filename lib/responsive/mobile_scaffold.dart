@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:godey/const/constant.dart';
 import 'package:godey/util/my_box.dart';
 import 'package:godey/util/my_tile.dart';
+
 class MobileScaffold extends StatefulWidget {
   const MobileScaffold({super.key});
 
@@ -11,6 +12,7 @@ class MobileScaffold extends StatefulWidget {
 
 String currentLine = "";
 String currentLineName = "";
+
 class _MobileScaffoldState extends State<MobileScaffold> {
   @override
   Widget build(BuildContext context) {
@@ -18,32 +20,41 @@ class _MobileScaffoldState extends State<MobileScaffold> {
       appBar: myAppBar,
       backgroundColor: Colors.grey[300],
       drawer: myDrawer(
-  context,
-  onLineSelected: (lineId) {
-    setState(() {
-      currentLine = lineId;
-    });
-  },
-   onLineNameSelected: (lineName) {
-                    setState(() {
-                      currentLineName = lineName;
-                    });
-                  },
-),
+        context,
+        onLineSelected: (lineId) {
+          setState(() {
+            currentLine = lineId;
+          });
+        },
+        onLineNameSelected: (lineName) {
+          setState(() {
+            currentLineName = lineName;
+          });
+        },
+      ),
       body: Column(
         children: [
           AspectRatio(
             aspectRatio: 1,
-            child: SizedBox(width: double.infinity,
-            child: GridView.builder(gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2), itemBuilder: (context,index){
-              return MyBox();
-                }
+            child: SizedBox(
+              width: double.infinity,
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                ),
+                itemBuilder: (context, index) {
+                  return MyBox();
+                },
               ),
             ),
           ),
-          Expanded(child: ListView.builder(itemBuilder: (context, index){
-            return MyTile();
-          }))          
+          Expanded(
+            child: ListView.builder(
+              itemBuilder: (context, index) {
+                return MyTile();
+              },
+            ),
+          ),
         ],
       ),
     );

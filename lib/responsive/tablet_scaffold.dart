@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:godey/services/device_service.dart';
 import 'package:godey/services/log_service.dart';
+import 'package:godey/widgets/hovertooltipbutton.dart';
+import 'package:godey/widgets/line_show.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:godey/config.dart';
@@ -19,6 +21,7 @@ class TabletScaffold extends StatefulWidget {
   State<TabletScaffold> createState() => _TabletScaffoldState();
 }
 
+var fetchLineresult = fetchLines();
 String currentLine = "";
 String currentLineName = "";
 String lineta = "67df1eee847d020add50949f";
@@ -175,48 +178,12 @@ class _TabletScaffoldState extends State<TabletScaffold> {
                   ),
                   Row(
                     children: [
-                      Container(
-                        height: 32,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(2),
-                          color: cardBackgroundColor,
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "Devices",
-                            style: TextStyle(color: textWhiteColor),
-                          ),
-                        ),
-                      ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(3),
-                            ),
-                            backgroundColor: cardBackgroundColor,
-                            foregroundColor: Colors.white,
-                          ),
-                          onPressed: () {
-                            lineIDController = TextEditingController();
-                            statController = TextEditingController();
-                            typeController = TextEditingController();
-                            LogService().add("Current line : $currentLine");
-                            if (currentLine == "") {
-                              registerDeviceErrDialog(context);
-                            } else {
-                              registerDeviceDialog(
-                                context,
-                                lineIDController,
-                                statController,
-                                typeController,
-                                currentLine,
-                              );
-                            }
-                          },
-                          child: Icon(Icons.add_chart),
+                        child: HoverTooltipButton(
+                          label: Text("Status"),
+                          tooltip: "Status Bar",
+                          onPressed: () {},
                         ),
                       ),
 
@@ -231,8 +198,37 @@ class _TabletScaffoldState extends State<TabletScaffold> {
                                 backgroundColor: cardBackgroundColor,
                                 foregroundColor: Colors.white,
                               ),
+                              onPressed: () {
+                                lineIDController = TextEditingController();
+                                statController = TextEditingController();
+                                typeController = TextEditingController();
+                                LogService().add("Current line : $currentLine");
+                                registerDeviceDialog(
+                                  context,
+                                  lineIDController,
+                                  statController,
+                                  typeController,
+                                  currentLine,
+                                );
+                              },
+                              child: Icon(Icons.add_chart),
+                            ),
+                          )
+                          : SizedBox(),
+
+                      (currentLine != "")
+                          ? Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(3),
+                                ),
+                                backgroundColor: cardBackgroundColor,
+                                foregroundColor: Colors.white,
+                              ),
                               onPressed: () {},
-                              child: Text("ID : $currentLine "),
+                              child: Text("ID :  $currentLine"),
                             ),
                           )
                           : SizedBox(),
@@ -249,6 +245,19 @@ class _TabletScaffoldState extends State<TabletScaffold> {
                               ),
                               onPressed: () {},
                               child: Text(currentLineName.toUpperCase()),
+                            ),
+                          )
+                          : SizedBox(),
+                      (fetchLineresult != [])
+                          ? Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: HoverTooltipButton(
+                              label: Icon(
+                                Icons.check,
+                                color: Colors.lightGreenAccent,
+                              ),
+                              tooltip: "Fetch Line",
+                              onPressed: () {},
                             ),
                           )
                           : SizedBox(),
@@ -417,6 +426,7 @@ class _TabletScaffoldState extends State<TabletScaffold> {
                         firstDay: DateTime.utc(210, 10, 16),
                         lastDay: DateTime.utc(2099, 10, 16),
                       ),
+                      myDebugConsole(context),
                     ],
                   ),
                 ),

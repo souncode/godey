@@ -4,6 +4,8 @@ import 'package:godey/const/constant.dart';
 import 'package:godey/services/device_service.dart';
 import 'package:godey/widgets/all_chart.dart';
 import 'package:godey/widgets/donut_chart.dart';
+import 'package:godey/widgets/hovertooltipbutton.dart';
+import 'package:godey/widgets/line_show.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '../services/log_service.dart';
 
@@ -25,6 +27,7 @@ final List<ErrorData> errorList = [
 class _DesktopScaffoldState extends State<DesktopScaffold> {
   String currentLine = "";
   String currentLineName = "";
+  var fetchLineresult = fetchLines();
 
   @override
   Widget build(BuildContext context) {
@@ -146,50 +149,43 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                   ),
                   Row(
                     children: [
-                      Container(
-                        height: 32,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(2),
-                          color: cardBackgroundColor,
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "Devices",
-                            style: TextStyle(color: textWhiteColor),
-                          ),
-                        ),
-                      ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(3),
-                            ),
-                            backgroundColor: cardBackgroundColor,
-                            foregroundColor: Colors.white,
-                          ),
-                          onPressed: () {
-                            lineIDController = TextEditingController();
-                            statController = TextEditingController();
-                            typeController = TextEditingController();
-                            LogService().add("Current line : $currentLine");
-                            if (currentLine == "") {
-                              registerDeviceErrDialog(context);
-                            } else {
-                              registerDeviceDialog(
-                                context,
-                                lineIDController,
-                                statController,
-                                typeController,
-                                currentLine,
-                              );
-                            }
-                          },
-                          child: Icon(Icons.add_chart),
+                        child: HoverTooltipButton(
+                          label: Text("Status"),
+                          tooltip: "Status Bar",
+                          onPressed: () {},
                         ),
                       ),
+
+                      (currentLine != "")
+                          ? Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(3),
+                                ),
+                                backgroundColor: cardBackgroundColor,
+                                foregroundColor: Colors.white,
+                              ),
+                              onPressed: () {
+                                lineIDController = TextEditingController();
+                                statController = TextEditingController();
+                                typeController = TextEditingController();
+                                LogService().add("Current line : $currentLine");
+                                registerDeviceDialog(
+                                  context,
+                                  lineIDController,
+                                  statController,
+                                  typeController,
+                                  currentLine,
+                                );
+                              },
+                              child: Icon(Icons.add_chart),
+                            ),
+                          )
+                          : SizedBox(),
 
                       (currentLine != "")
                           ? Padding(
@@ -220,6 +216,19 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                               ),
                               onPressed: () {},
                               child: Text(currentLineName.toUpperCase()),
+                            ),
+                          )
+                          : SizedBox(),
+                      (fetchLineresult != [])
+                          ? Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: HoverTooltipButton(
+                              label: Icon(
+                                Icons.check,
+                                color: Colors.lightGreenAccent,
+                              ),
+                              tooltip: "Fetch Line",
+                              onPressed: () {},
                             ),
                           )
                           : SizedBox(),
