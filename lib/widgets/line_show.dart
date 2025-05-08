@@ -39,11 +39,9 @@ Future<List<Map<String, dynamic>>> fetchLines() async {
       return [];
     } else {
       LogService().add("Error: ${response.statusCode}");
-      LogService().add("Error: ${response.statusCode}");
       return [];
     }
   } catch (e) {
-    LogService().add("Exception: $e");
     LogService().add("Exception: $e");
     return [];
   }

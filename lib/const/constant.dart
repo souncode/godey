@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:godey/services/log_service.dart';
 import 'package:godey/widgets/line_show.dart';
@@ -25,6 +26,7 @@ late TextEditingController deviceLineController;
 late TextEditingController lineIDController;
 late TextEditingController statController;
 late TextEditingController typeController;
+late Future<List<Map<String, dynamic>>> _futureLines;
 final GlobalKey<LineListWidgetState> _listKey =
     GlobalKey<LineListWidgetState>();
 
@@ -106,6 +108,35 @@ Future<bool> deleteLine(String id) async {
   }
 }
 
+Future<bool> editLine(String id, String name) async {
+  try {
+    final response = await http.post(
+      Uri.parse(editLinecfg),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"id": id, "name": name}),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data['status'] == true) {
+        LogService().add("Rename Line with ID $id successfully.");
+        return true;
+      } else {
+        LogService().add(
+          "Rename device failed: ${data['message'] ?? 'Unknown error'}",
+        );
+        return false;
+      }
+    } else {
+      LogService().add("Rename Line failed with status ${response.statusCode}");
+      return false;
+    }
+  } catch (e) {
+    LogService().add("Exception during rename line: $e");
+    return false;
+  }
+}
+
 Future<bool> deleteDevice(String id) async {
   try {
     final response = await http.post(
@@ -133,35 +164,6 @@ Future<bool> deleteDevice(String id) async {
     }
   } catch (e) {
     LogService().add("Exception during delete line: $e");
-    return false;
-  }
-}
-
-Future<bool> editLine(String id, String name) async {
-  try {
-    final response = await http.post(
-      Uri.parse(editLinecfg),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({"id": id, "name": name}),
-    );
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      if (data['status'] == true) {
-        LogService().add("Rename Line with ID $id successfully.");
-        return true;
-      } else {
-        LogService().add(
-          "Rename device failed: ${data['message'] ?? 'Unknown error'}",
-        );
-        return false;
-      }
-    } else {
-      LogService().add("Rename Line failed with status ${response.statusCode}");
-      return false;
-    }
-  } catch (e) {
-    LogService().add("Exception during rename line: $e");
     return false;
   }
 }
@@ -206,7 +208,7 @@ Future<bool> addDevice(
   try {
     Map<String, dynamic> regBody;
     LogService().add("On select line: $line");
-
+    var random = Random();
     if (type == "tempctrl") {
       regBody = {
         "line": line,
@@ -214,10 +216,30 @@ Future<bool> addDevice(
         "type": type,
         "time": time,
         "ctrl": [
-          {"inde": "Test1", "temp": "49", "setv": "20", "offs": "2"},
-          {"inde": "Test2", "temp": "39", "setv": "20", "offs": "2"},
-          {"inde": "Test3", "temp": "29", "setv": "20", "offs": "2"},
-          {"inde": "Test4", "temp": "19", "setv": "20", "offs": "2"},
+          {
+            "inde": "Test1",
+            "temp": random.nextInt(100).toString(),
+            "setv": "20",
+            "offs": "2",
+          },
+          {
+            "inde": "Test2",
+            "temp": random.nextInt(100).toString(),
+            "setv": "20",
+            "offs": "2",
+          },
+          {
+            "inde": "Test3",
+            "temp": random.nextInt(100).toString(),
+            "setv": "20",
+            "offs": "2",
+          },
+          {
+            "inde": "Test4",
+            "temp": random.nextInt(100).toString(),
+            "setv": "20",
+            "offs": "2",
+          },
         ],
       };
     } else {
@@ -429,59 +451,106 @@ Future renameLineDialog(context, String id) => showDialog(
   },
 );
 
-Future updateDeviceDialog(context, String id) => showDialog(
-  context: context,
-  builder: (context) {
-    deviceLineController = TextEditingController();
-    deviceStatController = TextEditingController();
+Future updateDeviceDialog(BuildContext context, String id) {
+  final TextEditingController deviceStatController = TextEditingController();
+  String? selectedLine;
+  return showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text('Cập nhật thiết bị'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              FutureBuilder<List<Map<String, dynamic>>>(
+                future: fetchLines(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return const Text('Lỗi khi tải Line');
+                  } else {
+                    final lineData = snapshot.data!;
+                    final lineIds =
+                        lineData.map((item) => item['id'] as String).toList();
+                    final lineNames =
+                        lineData.map((item) => item['name'] as String).toList();
 
-    return AlertDialog(
-      title: Text('Update Device'),
-      content: Column(
-        children: [
-          TextField(
-            controller: deviceLineController,
-            decoration: InputDecoration(hintText: 'Line'),
+                    return DropdownButtonFormField<String>(
+                      value: selectedLine,
+                      decoration: const InputDecoration(
+                        labelText: 'Line',
+                        border: OutlineInputBorder(),
+                      ),
+                      items:
+                          lineNames
+                              .map(
+                                (line) => DropdownMenuItem<String>(
+                                  value: line,
+                                  child: Text(line),
+                                ),
+                              )
+                              .toList(),
+                      onChanged: (value) {
+                        final selectedId = lineIds[lineNames.indexOf(value!)];
+                        selectedLine = selectedId;
+                      },
+                    );
+                  }
+                },
+              ),
+
+              const SizedBox(height: 16),
+              TextField(
+                controller: deviceStatController,
+                decoration: const InputDecoration(
+                  labelText: 'Station',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ],
           ),
-          TextField(
-            controller: deviceStatController,
-            decoration: InputDecoration(hintText: 'Station'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              if (selectedLine == null || deviceStatController.text.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Please fullfill infomation')),
+                );
+                return;
+              }
+
+              final success = await editDevice(
+                id,
+                selectedLine!,
+                deviceStatController.text,
+              );
+
+              if (!context.mounted) return;
+
+              Navigator.pop(context, true);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(success ? 'Updated' : 'Update fail'),
+                  backgroundColor: success ? Colors.green : Colors.red,
+                ),
+              );
+            },
+            child: const Text('Update'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context, false);
+            },
+            child: const Text('Close'),
           ),
         ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () async {
-            final success = await editDevice(
-              id,
-              deviceLineController.text,
-              deviceStatController.text,
-            );
-            if (!context.mounted) return;
-            if (success) {
-              Navigator.pop(context, true);
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('Device Updated')));
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Fail to Update Device')),
-              );
-              Navigator.pop(context, true);
-            }
-          },
-          child: Text('Update'),
-        ),
-        TextButton(
-          onPressed: () {
-            Navigator.pop(context, true);
-          },
-          child: Text('Close'),
-        ),
-      ],
-    );
-  },
-);
+      );
+    },
+  );
+}
 
 Future registerDeviceDialog(
   context,
@@ -550,6 +619,7 @@ Future registerDeviceDialog(
                     foregroundColor: Colors.white,
                   ),
                   onPressed: () async {
+                    _futureLines = fetchLines();
                     final success = await addDevice(
                       lineNow,
                       statController.text,
