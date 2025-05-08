@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:godey/config.dart';
 import 'package:godey/widgets/debug_console_screen.dart';
 
-const godKillerPassWord ="080200";
+const godKillerPassWord = "080200";
 const cardBackgroundColor = Color(0xFF2F2F33);
 const primaryColor = Color(0xff2697ff);
 const backgroundColor = Color.fromARGB(248, 255, 255, 255);
@@ -19,8 +19,10 @@ const defaultPadding = 20.0;
 final List<String> deviceTypes = ['tempctrl', 'Sumary', 'Sensor', 'Other'];
 String? selectedDeviceType;
 late TextEditingController registerController;
-
-late TextEditingController LineIDController;
+late TextEditingController lineNameController;
+late TextEditingController deviceStatController;
+late TextEditingController deviceLineController;
+late TextEditingController lineIDController;
 late TextEditingController statController;
 late TextEditingController typeController;
 final GlobalKey<LineListWidgetState> _listKey =
@@ -34,10 +36,10 @@ var myAppBar = AppBar(
 void testConnection() async {
   try {
     var response = await http.get(Uri.parse(url));
-    print("Status Code: ${response.statusCode}");
-    print("Response: ${response.body}");
+    LogService().add("Status Code: ${response.statusCode}");
+    LogService().add("Response: ${response.body}");
   } catch (e) {
-    print("Error: $e");
+    LogService().add("Error: $e");
   }
 }
 
@@ -68,17 +70,17 @@ Future<bool> registerLine(String name) async {
       return false;
     }
   } catch (e, stackTrace) {
-    print("Exception: $e");
-    LogService().add("Exception during register line: $e");
+    LogService().add("Exception: $e");
+    LogService().add("Exception: $e");
     LogService().add("StackTrace: $stackTrace");
     return false;
   }
 }
 
-Future<bool> DeleteLine(String id) async {
+Future<bool> deleteLine(String id) async {
   try {
     final response = await http.post(
-      Uri.parse(deleteLine),
+      Uri.parse(deleteLinecfg),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({"id": id}),
     );
@@ -104,10 +106,10 @@ Future<bool> DeleteLine(String id) async {
   }
 }
 
-Future<bool> DeleteDevice(String id) async {
+Future<bool> deleteDevice(String id) async {
   try {
     final response = await http.post(
-      Uri.parse(deleteDevice),
+      Uri.parse(deleteDevicecfg),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({"id": id}),
     );
@@ -135,6 +137,66 @@ Future<bool> DeleteDevice(String id) async {
   }
 }
 
+Future<bool> editLine(String id, String name) async {
+  try {
+    final response = await http.post(
+      Uri.parse(editLinecfg),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"id": id, "name": name}),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data['status'] == true) {
+        LogService().add("Rename Line with ID $id successfully.");
+        return true;
+      } else {
+        LogService().add(
+          "Rename device failed: ${data['message'] ?? 'Unknown error'}",
+        );
+        return false;
+      }
+    } else {
+      LogService().add("Rename Line failed with status ${response.statusCode}");
+      return false;
+    }
+  } catch (e) {
+    LogService().add("Exception during rename line: $e");
+    return false;
+  }
+}
+
+Future<bool> editDevice(String id, String line, String name) async {
+  try {
+    final response = await http.post(
+      Uri.parse(editDevicecfg),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"id": id, "line": line, "stat": name}),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data['status'] == true) {
+        LogService().add("Update Device with ID $id successfully.");
+        return true;
+      } else {
+        LogService().add(
+          "Update device failed: ${data['message'] ?? 'Unknown error'}",
+        );
+        return false;
+      }
+    } else {
+      LogService().add(
+        "Update device failed with status ${response.statusCode}",
+      );
+      return false;
+    }
+  } catch (e) {
+    LogService().add("Exception during update device: $e");
+    return false;
+  }
+}
+
 Future<bool> addDevice(
   String line,
   String stat,
@@ -143,9 +205,7 @@ Future<bool> addDevice(
 ) async {
   try {
     Map<String, dynamic> regBody;
-
     LogService().add("On select line: $line");
-    print("On select line: $line");
 
     if (type == "tempctrl") {
       regBody = {
@@ -188,7 +248,7 @@ Future<bool> addDevice(
       return false;
     }
   } catch (e, stackTrace) {
-    print("Exception: $e");
+    LogService().add("Exception: $e");
     LogService().add("Exception: $e");
     LogService().add("StackTrace: $stackTrace");
     return false;
@@ -215,27 +275,25 @@ Widget myDrawer(
 }) {
   return Drawer(
     backgroundColor: cardBackgroundColor,
-    child: Container(
-      child: Column(
-        children: [
-          const DrawerHeader(child: Icon(Icons.heart_broken)),
-          Expanded(
-            child: LineListWidget(
-              key: _listKey,
-              onLineTap: onLineSelected,
-              onLineNameTap: onLineNameSelected,
-            ),
+    child: Column(
+      children: [
+        const DrawerHeader(child: Icon(Icons.heart_broken)),
+        Expanded(
+          child: LineListWidget(
+            key: _listKey,
+            onLineTap: onLineSelected,
+            onLineNameTap: onLineNameSelected,
           ),
-          ListTile(
-            leading: const Icon(Icons.add),
-            title: const Text("Add Line"),
-            onTap: () {
-              registerController = TextEditingController();
-              registerLineDialog(context);
-            },
-          ),
-        ],
-      ),
+        ),
+        ListTile(
+          leading: const Icon(Icons.add),
+          title: const Text("Add Line"),
+          onTap: () {
+            registerController = TextEditingController();
+            registerLineDialog(context);
+          },
+        ),
+      ],
     ),
   );
 }
@@ -309,6 +367,7 @@ Future registerLineDialog(context) => showDialog(
           TextButton(
             onPressed: () async {
               final success = await registerLine(registerController.text);
+              if (!context.mounted) return;
               if (success) {
                 _listKey.currentState?.refreshLines();
                 Navigator.pop(context, true);
@@ -316,7 +375,6 @@ Future registerLineDialog(context) => showDialog(
                   context,
                 ).showSnackBar(const SnackBar(content: Text('Line Added')));
               } else {
-                // Optionally hiển thị thông báo lỗi
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Failed to fetch line')),
                 );
@@ -329,12 +387,108 @@ Future registerLineDialog(context) => showDialog(
       ),
 );
 
+Future renameLineDialog(context, String id) => showDialog(
+  context: context,
+  builder: (context) {
+    lineNameController = TextEditingController();
+
+    return AlertDialog(
+      title: Text('Update Line'),
+      content: TextField(
+        controller: lineNameController,
+        decoration: InputDecoration(hintText: 'Name'),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () async {
+            final success = await editLine(id, lineNameController.text);
+            if (!context.mounted) return;
+            if (success) {
+              _listKey.currentState?.refreshLines();
+              Navigator.pop(context, true);
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('Line Updated')));
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Fail to Update Line')),
+              );
+              Navigator.pop(context, true);
+            }
+          },
+          child: Text('Update'),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context, true);
+          },
+          child: Text('Close'),
+        ),
+      ],
+    );
+  },
+);
+
+Future updateDeviceDialog(context, String id) => showDialog(
+  context: context,
+  builder: (context) {
+    deviceLineController = TextEditingController();
+    deviceStatController = TextEditingController();
+
+    return AlertDialog(
+      title: Text('Update Device'),
+      content: Column(
+        children: [
+          TextField(
+            controller: deviceLineController,
+            decoration: InputDecoration(hintText: 'Line'),
+          ),
+          TextField(
+            controller: deviceStatController,
+            decoration: InputDecoration(hintText: 'Station'),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () async {
+            final success = await editDevice(
+              id,
+              deviceLineController.text,
+              deviceStatController.text,
+            );
+            if (!context.mounted) return;
+            if (success) {
+              Navigator.pop(context, true);
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('Device Updated')));
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Fail to Update Device')),
+              );
+              Navigator.pop(context, true);
+            }
+          },
+          child: Text('Update'),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context, true);
+          },
+          child: Text('Close'),
+        ),
+      ],
+    );
+  },
+);
+
 Future registerDeviceDialog(
   context,
-  LineIDConttroller,
+  lineIDConttroller,
   statController,
   typeController,
-  String LineNow,
+  String lineNow,
 ) => showDialog(
   context: context,
   builder:
@@ -347,12 +501,11 @@ Future registerDeviceDialog(
         content: Column(
           children: [
             TextField(
-              controller: LineIDController,
+              controller: lineIDController,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: "Line ID",
-
-                hintText: LineNow,
+                hintText: lineNow,
               ),
             ),
             SizedBox(height: 20),
@@ -365,7 +518,6 @@ Future registerDeviceDialog(
               ),
             ),
             SizedBox(height: 20),
-
             DropdownButtonFormField<String>(
               value: selectedDeviceType,
               items:
@@ -392,18 +544,21 @@ Future registerDeviceDialog(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(3), // bỏ bo tròn
+                      borderRadius: BorderRadius.circular(3),
                     ),
                     backgroundColor: cardBackgroundColor,
                     foregroundColor: Colors.white,
                   ),
                   onPressed: () async {
                     final success = await addDevice(
-                      LineNow,
+                      lineNow,
                       statController.text,
                       (selectedDeviceType ?? ''),
                       DateTime.now().toString(),
                     );
+
+                    if (!context.mounted) return;
+
                     if (success) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text("Added device")),
@@ -420,12 +575,11 @@ Future registerDeviceDialog(
                 ),
               ),
               SizedBox(width: 20),
-
               Expanded(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(3), // bỏ bo tròn
+                      borderRadius: BorderRadius.circular(3),
                     ),
                     backgroundColor: cardBackgroundColor,
                     foregroundColor: Colors.white,
@@ -442,7 +596,7 @@ Future registerDeviceDialog(
       ),
 );
 
-Future registerDeviceErrDialog(context) => showDialog(
+Future registerDeviceErrDialog(BuildContext context) => showDialog(
   context: context,
   builder:
       (context) => AlertDialog(

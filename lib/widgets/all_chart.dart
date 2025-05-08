@@ -89,11 +89,9 @@ class _AllChartsState extends State<AllCharts> {
         });
       } else {
         LogService().add("Failed to load: ${response.body}");
-        print("Failed to load: ${response.body}");
       }
     } catch (e) {
       LogService().add("Exception: $e");
-      print("Exception: $e");
     }
   }
 
@@ -104,7 +102,6 @@ class _AllChartsState extends State<AllCharts> {
     DateTime now = DateTime.now();
     for (var ctrl in deviceData['ctrl']) {
       if (ctrl['temp'] != null && ctrl['inde'] != null) {
-        print(deviceData['_id'].toString());
         tempData.add(
           TemperatureData(
             time: now,

@@ -36,7 +36,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
               'lib/assets/images/sown_logo.svg',
               width: 50,
               height: 50,
-              color: Colors.white,
+              colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
             ),
             SizedBox(width: 100),
             const Text(
@@ -170,16 +170,16 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                             foregroundColor: Colors.white,
                           ),
                           onPressed: () {
-                            LineIDController = TextEditingController();
+                            lineIDController = TextEditingController();
                             statController = TextEditingController();
                             typeController = TextEditingController();
-                            print("Current line : " + currentLine);
+                            LogService().add("Current line : $currentLine");
                             if (currentLine == "") {
                               registerDeviceErrDialog(context);
                             } else {
                               registerDeviceDialog(
                                 context,
-                                LineIDController,
+                                lineIDController,
                                 statController,
                                 typeController,
                                 currentLine,
@@ -202,7 +202,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                                 foregroundColor: Colors.white,
                               ),
                               onPressed: () {},
-                              child: Text("ID : " + currentLine),
+                              child: Text("ID :  $currentLine"),
                             ),
                           )
                           : SizedBox(),

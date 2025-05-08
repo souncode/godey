@@ -39,11 +39,11 @@ Future<List<Map<String, dynamic>>> fetchLines() async {
       return [];
     } else {
       LogService().add("Error: ${response.statusCode}");
-      print("Error: ${response.statusCode}");
+      LogService().add("Error: ${response.statusCode}");
       return [];
     }
   } catch (e) {
-    print("Exception: $e");
+    LogService().add("Exception: $e");
     LogService().add("Exception: $e");
     return [];
   }
@@ -90,8 +90,23 @@ class LineListWidgetState extends State<LineListWidget> {
                 motion: const DrawerMotion(),
                 children: [
                   SlidableAction(
-                    onPressed: (BuildContext context) {
-                      print("Edit");
+                    onPressed: (_) async {
+                      if (!context.mounted) return;
+
+                      final success = await renameLineDialog(
+                        context,
+                        line['id'],
+                      );
+                      if (success) {
+                        refreshLines();
+                      } else {
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Failed to rename line'),
+                          ),
+                        );
+                      }
                     },
                     backgroundColor: Color.fromARGB(255, 26, 183, 99),
                     foregroundColor: Colors.white,
@@ -106,10 +121,13 @@ class LineListWidgetState extends State<LineListWidget> {
                 children: [
                   SlidableAction(
                     onPressed: (_) async {
-                      final success = await DeleteLine(line['id']);
+                      if (!context.mounted) return;
+
+                      final success = await deleteLine(line['id']);
                       if (success) {
                         refreshLines();
                       } else {
+                        if (!context.mounted) return;
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Failed to delete line'),

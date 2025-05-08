@@ -3,7 +3,6 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:godey/const/constant.dart';
 import 'package:godey/services/log_service.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-
 import '../model/ctrl_model.dart';
 import 'package:intl/intl.dart';
 
@@ -13,10 +12,11 @@ class ChartShow extends StatelessWidget {
   final List<TemperatureData> tempData;
 
   ChartShow({
+    Key? key,
     required this.chartTitle,
     required this.tempData,
     required this.chartID,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class ChartShow extends StatelessWidget {
       padding: const EdgeInsets.all(5.0),
       child:
           tempData.isEmpty
-              ? Center(child: CircularProgressIndicator())
+              ? const Center(child: CircularProgressIndicator())
               : Slidable(
                 key: const ValueKey(0),
                 startActionPane: ActionPane(
@@ -32,9 +32,9 @@ class ChartShow extends StatelessWidget {
                   children: [
                     SlidableAction(
                       onPressed: (BuildContext context) {
-                        print("Edit");
+                        updateDeviceDialog(context, chartID);
                       },
-                      backgroundColor: Color.fromARGB(255, 26, 183, 99),
+                      backgroundColor: const Color.fromARGB(255, 26, 183, 99),
                       foregroundColor: Colors.white,
                       icon: Icons.edit,
                       label: 'Edit',
@@ -46,14 +46,18 @@ class ChartShow extends StatelessWidget {
                   children: [
                     SlidableAction(
                       onPressed: (_) async {
-                        LogService().add("Chart ID: ${chartID}");
-                        final success = await DeleteDevice(chartID);
+                        LogService().add("Chart ID: $chartID");
+
+                        final messenger = ScaffoldMessenger.of(context);
+
+                        final success = await deleteDevice(chartID);
+
                         if (success) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Deleted evice')),
+                          messenger.showSnackBar(
+                            const SnackBar(content: Text('Deleted device')),
                           );
                         } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          messenger.showSnackBar(
                             const SnackBar(
                               content: Text('Failed to delete Device'),
                             ),
@@ -125,10 +129,10 @@ class ChartShow extends StatelessWidget {
         dataSource: entry.value,
         xValueMapper: (TemperatureData temp, _) => temp.time,
         yValueMapper: (TemperatureData temp, _) => temp.temperature,
-        markerSettings: MarkerSettings(isVisible: true),
-        dataLabelSettings: DataLabelSettings(isVisible: false),
+        markerSettings: const MarkerSettings(isVisible: true),
+        dataLabelSettings: const DataLabelSettings(isVisible: false),
         enableTooltip: true,
-        animationDuration: 00,
+        animationDuration: 0,
       );
     }).toList();
   }

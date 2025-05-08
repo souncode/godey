@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:godey/services/log_service.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:godey/config.dart';
@@ -30,24 +31,24 @@ void getDevice(line) async {
       body: jsonEncode(regBody),
     );
 
-    print("Response Status Code: ${response.statusCode}");
-    print("Response Body: ${response.body}");
+    LogService().add("Response Status Code: ${response.statusCode}");
+    LogService().add("Response Body: ${response.body}");
 
     if (response.statusCode == 200) {
       var jsonRes = jsonDecode(response.body);
-      print("Parsed JSON: $jsonRes");
+      LogService().add("Parsed JSON: $jsonRes");
 
       if (jsonRes['success'].isEmpty) {
-        print("No devices found for the specified stat.");
+        LogService().add("No devices found for the specified stat.");
       } else {
-        print("Devices found: ${jsonRes['success']}");
+        LogService().add("Devices found: ${jsonRes['success']}");
       }
     } else {
-      print("Error: ${response.statusCode} - ${response.body}");
+      LogService().add("Error: ${response.statusCode} - ${response.body}");
     }
   } catch (e, stackTrace) {
-    print("Exception: $e");
-    print(stackTrace);
+    LogService().add("Exception: $e");
+    LogService().add(stackTrace.toString());
   }
 }
 
@@ -58,24 +59,24 @@ void getLine() async {
       headers: {"Content-Type": "application/json"},
     );
 
-    print("Response Status Code: ${response.statusCode}");
-    print("Response Body: ${response.body}");
+    LogService().add("Response Status Code: ${response.statusCode}");
+    LogService().add("Response Body: ${response.body}");
 
     if (response.statusCode == 200) {
       var jsonRes = jsonDecode(response.body);
-      print("Parsed JSON: $jsonRes");
+      LogService().add("Parsed JSON: $jsonRes");
 
       if (jsonRes['success'].isEmpty) {
-        print("No line found for the specified stat.");
+        LogService().add("No line found for the specified stat.");
       } else {
-        print("lin found: ${jsonRes['success']}");
+        LogService().add("lin found: ${jsonRes['success']}");
       }
     } else {
-      print("Error: ${response.statusCode} - ${response.body}");
+      LogService().add("Error: ${response.statusCode} - ${response.body}");
     }
   } catch (e, stackTrace) {
-    print("Exception: $e");
-    print(stackTrace);
+    LogService().add("Exception: $e");
+    LogService().add(stackTrace.toString());
   }
 }
 
@@ -198,16 +199,16 @@ class _TabletScaffoldState extends State<TabletScaffold> {
                             foregroundColor: Colors.white,
                           ),
                           onPressed: () {
-                            LineIDController = TextEditingController();
+                            lineIDController = TextEditingController();
                             statController = TextEditingController();
                             typeController = TextEditingController();
-                            print("Current line : " + currentLine);
+                            LogService().add("Current line : " + currentLine);
                             if (currentLine == "") {
                               registerDeviceErrDialog(context);
                             } else {
                               registerDeviceDialog(
                                 context,
-                                LineIDController,
+                                lineIDController,
                                 statController,
                                 typeController,
                                 currentLine,
