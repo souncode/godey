@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:godey/const/constant.dart';
+import 'package:godey/services/device_service.dart';
 import 'package:godey/services/log_service.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import '../model/ctrl_model.dart';
+
 import 'package:intl/intl.dart';
 
 class ChartShow extends StatelessWidget {
@@ -11,12 +13,12 @@ class ChartShow extends StatelessWidget {
   final String chartID;
   final List<TemperatureData> tempData;
 
-  ChartShow({
-    Key? key,
+  const ChartShow({
+    super.key,
     required this.chartTitle,
     required this.tempData,
     required this.chartID,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

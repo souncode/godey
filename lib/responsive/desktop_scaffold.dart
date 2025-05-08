@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:godey/const/constant.dart';
+import 'package:godey/services/device_service.dart';
 import 'package:godey/widgets/all_chart.dart';
 import 'package:godey/widgets/donut_chart.dart';
 import 'package:table_calendar/table_calendar.dart';

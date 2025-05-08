@@ -12,17 +12,17 @@ import '../model/ctrl_model.dart';
 class AllCharts extends StatefulWidget {
   final String lineId;
 
-  AllCharts({required this.lineId});
+  const AllCharts({super.key, required this.lineId});
 
   @override
-  _AllChartsState createState() => _AllChartsState();
+  AllChartsState createState() => AllChartsState();
 }
 
-class _AllChartsState extends State<AllCharts> {
+class AllChartsState extends State<AllCharts> {
   List<Map<String, dynamic>> chartDataList = [];
   bool loading = true;
   Timer? _timer;
-  int _duration = 5;
+  final int _duration = 5;
 
   @override
   void initState() {

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:godey/services/device_service.dart';
 import 'package:godey/services/log_service.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter/material.dart';
@@ -202,7 +203,7 @@ class _TabletScaffoldState extends State<TabletScaffold> {
                             lineIDController = TextEditingController();
                             statController = TextEditingController();
                             typeController = TextEditingController();
-                            LogService().add("Current line : " + currentLine);
+                            LogService().add("Current line : $currentLine");
                             if (currentLine == "") {
                               registerDeviceErrDialog(context);
                             } else {
@@ -231,7 +232,7 @@ class _TabletScaffoldState extends State<TabletScaffold> {
                                 foregroundColor: Colors.white,
                               ),
                               onPressed: () {},
-                              child: Text("ID : " + currentLine),
+                              child: Text("ID : $currentLine "),
                             ),
                           )
                           : SizedBox(),
