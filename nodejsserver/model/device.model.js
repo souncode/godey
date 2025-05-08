@@ -45,17 +45,17 @@ const deviceSchema = new Schema({
     moni: [
 
         {
+            prtn: {
+                type: String,
+            },
             good: {
                 type: String,
-
             },
             ngoo: {
                 type: String,
-
             },
-            oee: {
+            targ: {
                 type: String,
-
             },
         }
     ],

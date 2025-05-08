@@ -7,8 +7,20 @@ const lineSchema = new Schema({
         type: String,
         lowercase: true,
         require: true
+    },
+    prtn: {
+        type: String,
+    },
+    targ: {
+        type: String,
+    },
+    good: {
+        type: String,
+    },
+    ngoo: {
+        type: String,
     }
 });
-const LineModel = db.model('line',lineSchema);
+const LineModel = db.model('line', lineSchema);
 
 module.exports = LineModel;
