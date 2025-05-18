@@ -144,7 +144,7 @@ class LineListWidgetState extends State<LineListWidget> {
               child: Container(
                 color: backgroundColor,
                 child: ListTile(
-                  hoverColor: Colors.white,
+                  hoverColor: Colors.black,
                   leading: const Icon(Icons.monitor_heart),
                   trailing: Column(
                     children: [

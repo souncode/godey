@@ -27,7 +27,7 @@ class _HoverTooltipButtonState extends State<HoverTooltipButton> {
   void _showTooltip() {
     final renderBox = _key.currentContext?.findRenderObject() as RenderBox?;
     final overlay = Overlay.of(context);
-    if (renderBox == null || overlay == null) return;
+    if (renderBox == null) return;
 
     final position = renderBox.localToGlobal(Offset.zero);
     final size = renderBox.size;

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:godey/const/constant.dart';
+import 'package:godey/responsive/vision/home.dart';
 import 'package:godey/services/device_service.dart';
 import 'package:godey/widgets/all_chart.dart';
 import 'package:godey/widgets/donut_chart.dart';
@@ -43,11 +44,48 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
               colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
             ),
             SizedBox(width: 100),
-            const Text(
-              'Desktop scaffold',
-              style: TextStyle(
-                color: Colors.cyanAccent,
-                fontWeight: FontWeight.w900,
+            SizedBox(
+              height: 100,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: backgroundColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                ),
+                onPressed: () {},
+                child: const Text(
+                  'IOT Dash Board',
+                  style: TextStyle(
+                    color: textDarkColor,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(width: 5),
+            SizedBox(
+              height: 100,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: backgroundColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => VisionPage()),
+                  );
+                },
+                child: const Text(
+                  'Vision',
+                  style: TextStyle(
+                    color: textDarkColor,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
               ),
             ),
           ],
