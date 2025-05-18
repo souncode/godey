@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:godey/const/constant.dart';
-import 'package:godey/responsive/vision/home.dart';
+import 'package:godey/responsive/vision/vision_home.dart';
 import 'package:godey/services/device_service.dart';
 import 'package:godey/widgets/all_chart.dart';
 import 'package:godey/widgets/donut_chart.dart';
@@ -76,7 +76,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => VisionPage()),
+                    MaterialPageRoute(builder: (context) => VisionHomePage()),
                   );
                 },
                 child: const Text(
