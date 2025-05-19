@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:godey/const/constant.dart';
@@ -82,6 +79,23 @@ class _VisionHomePageState extends State<VisionHomePage> {
             color: const Color.fromARGB(198, 28, 29, 33),
             child: Column(
               children: [
+                SizedBox(height: 5),
+                SizedBox(
+                  height: 55,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: backgroundColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(0),
+                        ),
+                      ),
+                      onPressed: () {},
+                      child: Icon(color: textDarkColor, Icons.folder),
+                    ),
+                  ),
+                ),
                 SizedBox(height: 5),
                 SizedBox(
                   height: 55,
