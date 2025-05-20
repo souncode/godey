@@ -405,90 +405,79 @@ class _LabelingState extends State<Labeling> {
             ),
           ),
           Expanded(
-            flex: 3,
-            child: Column(
-              children: [
-                Expanded(
-                  child: Container(
-                    color: Colors.white,
-                    child:
-                        selectedImage != null
-                            ? GestureDetector(
-                              onPanStart: (details) {
-                                if (isDrawingBox) {
+            flex: 5,
+
+            child: Container(
+              color: Colors.white,
+              child:
+                  selectedImage != null
+                      ? GestureDetector(
+                        onPanStart: (details) {
+                          if (isDrawingBox) {
+                            setState(() {
+                              startPoint = details.localPosition;
+                              endPoint = details.localPosition;
+                            });
+                          }
+                        },
+                        onPanUpdate: (details) {
+                          if (isDrawingBox) {
+                            setState(() {
+                              endPoint = details.localPosition;
+                            });
+                          }
+                        },
+                        onPanEnd: (details) {
+                          if (isDrawingBox &&
+                              startPoint != null &&
+                              endPoint != null) {
+                            setState(() {
+                              boundingBoxes.add({
+                                'rect': Rect.fromPoints(startPoint!, endPoint!),
+                                'label': '',
+                              });
+                              startPoint = null;
+                              endPoint = null;
+                              isDrawingBox = false;
+                            });
+                          }
+                        },
+                        child: Stack(
+                          children: [
+                            Image.memory(selectedImage!['bytes']),
+                            ...boundingBoxes.asMap().entries.map((entry) {
+                              final index = entry.key;
+                              final box = entry.value;
+                              return BoundingBoxWidget(
+                                rect: box['rect'],
+                                label: box['label'],
+                                onTap: () => _showLabelDialog(index),
+                                onUpdate: (newRect) {
                                   setState(() {
-                                    startPoint = details.localPosition;
-                                    endPoint = details.localPosition;
+                                    boundingBoxes[index]['rect'] = newRect;
                                   });
-                                }
-                              },
-                              onPanUpdate: (details) {
-                                if (isDrawingBox) {
-                                  setState(() {
-                                    endPoint = details.localPosition;
-                                  });
-                                }
-                              },
-                              onPanEnd: (details) {
-                                if (isDrawingBox &&
-                                    startPoint != null &&
-                                    endPoint != null) {
-                                  setState(() {
-                                    boundingBoxes.add({
-                                      'rect': Rect.fromPoints(
-                                        startPoint!,
-                                        endPoint!,
-                                      ),
-                                      'label': '',
-                                    });
-                                    startPoint = null;
-                                    endPoint = null;
-                                    isDrawingBox = false;
-                                  });
-                                }
-                              },
-                              child: Stack(
-                                children: [
-                                  Image.memory(selectedImage!['bytes']),
-                                  ...boundingBoxes.asMap().entries.map((entry) {
-                                    final index = entry.key;
-                                    final box = entry.value;
-                                    return BoundingBoxWidget(
-                                      rect: box['rect'],
-                                      label: box['label'],
-                                      onTap: () => _showLabelDialog(index),
-                                      onUpdate: (newRect) {
-                                        setState(() {
-                                          boundingBoxes[index]['rect'] =
-                                              newRect;
-                                        });
-                                      },
-                                    );
-                                  }),
-                                  if (startPoint != null && endPoint != null)
-                                    Positioned(
-                                      left: startPoint!.dx,
-                                      top: startPoint!.dy,
-                                      width:
-                                          (endPoint!.dx - startPoint!.dx).abs(),
-                                      height:
-                                          (endPoint!.dy - startPoint!.dy).abs(),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                            color: Colors.blue,
-                                            width: 1,
-                                          ),
-                                        ),
-                                      ),
+                                },
+                              );
+                            }),
+                            if (startPoint != null && endPoint != null)
+                              Positioned(
+                                left: startPoint!.dx,
+                                top: startPoint!.dy,
+                                width: (endPoint!.dx - startPoint!.dx).abs(),
+                                height: (endPoint!.dy - startPoint!.dy).abs(),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: Colors.blue,
+                                      width: 1,
                                     ),
-                                ],
+                                  ),
+                                ),
                               ),
-                            )
-                            : const Center(child: Text("Chọn ảnh để gán nhãn")),
-                  ),
-                ),
-              ],
+                          ],
+                        ),
+                      )
+                      : const Center(child: Text("Chọn ảnh để gán nhãn")),
             ),
           ),
           Expanded(

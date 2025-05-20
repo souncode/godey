@@ -161,12 +161,11 @@ class _BoundingBoxWidgetState extends State<BoundingBoxWidget> {
                   child: MouseRegion(
                     cursor: SystemMouseCursors.resizeUpLeft,
                     child: Container(
-                      width: 12,
-                      height: 12,
+                      width: 5,
+                      height: 5,
                       decoration: BoxDecoration(
                         color: Colors.blue,
                         borderRadius: BorderRadius.circular(2),
-                        border: Border.all(color: Colors.white),
                       ),
                     ),
                   ),
@@ -185,12 +184,11 @@ class _BoundingBoxWidgetState extends State<BoundingBoxWidget> {
                   child: MouseRegion(
                     cursor: SystemMouseCursors.resizeDownRight,
                     child: Container(
-                      width: 12,
-                      height: 12,
+                      width: 5,
+                      height: 5,
                       decoration: BoxDecoration(
                         color: Colors.blue,
-                        borderRadius: BorderRadius.circular(2),
-                        border: Border.all(color: Colors.white),
+                        borderRadius: BorderRadius.circular(1),
                       ),
                     ),
                   ),
