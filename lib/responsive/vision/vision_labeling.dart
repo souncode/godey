@@ -58,6 +58,8 @@ class _LabelingState extends State<Labeling> {
       for (var item in data) {
         final imageUrl = item['url'];
         final imageName = item['name'];
+        final labelUrl = item['labelUrl'];
+        final boundingBoxes = item['boundingBoxes'];
 
         try {
           final imageResp = await http.get(Uri.parse(imageUrl));
@@ -69,7 +71,12 @@ class _LabelingState extends State<Labeling> {
               contentType != null &&
               contentType.startsWith('image/') &&
               bytes.isNotEmpty) {
-            images.add({'bytes': bytes, 'name': imageName});
+            images.add({
+              'bytes': bytes,
+              'name': imageName,
+              'labelUrl': labelUrl,
+              'boundingBoxes': boundingBoxes,
+            });
             print('✅ Loaded image: $imageName (${bytes.lengthInBytes} bytes)');
           } else {
             print(
@@ -151,9 +158,52 @@ class _LabelingState extends State<Labeling> {
     final bytes = image['bytes'] as Uint8List;
     setState(() {
       selectedImage = image;
+      boundingBoxes =
+          (image['boundingBoxes'] as List<dynamic>? ?? [])
+              .map(
+                (box) => {
+                  'rect': Rect.fromLTWH(
+                    (box['rect']['x'] as num).toDouble(),
+                    (box['rect']['y'] as num).toDouble(),
+                    (box['rect']['width'] as num).toDouble(),
+                    (box['rect']['height'] as num).toDouble(),
+                  ),
+                  'label': box['label'],
+                },
+              )
+              .toList();
       imageInfo =
           'Name: ${image['name']}\nSize: ${(bytes.lengthInBytes / 1024).toStringAsFixed(2)} KB';
     });
+  }
+
+  Future<void> saveLabeledImageToServer({
+    required String imageName,
+    required String folder,
+    required List<Map<String, dynamic>> boundingBoxes,
+  }) async {
+    final url = Uri.parse('http://soun.mooo.com:3000/uploads/label');
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'name': imageName,
+          'folder': folder,
+          'boundingBoxes': boundingBoxes,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print('✅ Label data saved successfully');
+      } else {
+        print('❌ Failed to save label data: ${response.statusCode}');
+        print('Response body: ${response.body}');
+      }
+    } catch (e) {
+      print('❌ Error sending label data: $e');
+    }
   }
 
   void _showLabelDialog(int index) {
@@ -215,7 +265,39 @@ class _LabelingState extends State<Labeling> {
               });
             },
           ),
-          SpeedDialChild(child: Icon(Icons.exposure_minus_1), label: "Minus"),
+          SpeedDialChild(
+            onTap: () {
+              if (selectedImage == null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('❗ Vui lòng chọn ảnh để lưu')),
+                );
+                return;
+              }
+
+              final processedBoxes =
+                  boundingBoxes.map((box) {
+                    final rect = box['rect'] as Rect;
+                    return {
+                      'label': box['label'],
+                      'rect': {
+                        'x': rect.left,
+                        'y': rect.top,
+                        'width': rect.width,
+                        'height': rect.height,
+                      },
+                    };
+                  }).toList();
+
+              saveLabeledImageToServer(
+                imageName: selectedImage!['name'],
+                folder: 'soun_user_1',
+                boundingBoxes: processedBoxes,
+              );
+            },
+            child: const Icon(Icons.save),
+            label: "Save",
+          ),
+
           SpeedDialChild(child: Icon(Icons.text_fields), label: "Edit"),
           SpeedDialChild(child: Icon(Icons.zoom_in), label: "Zoom in"),
           SpeedDialChild(child: Icon(Icons.zoom_out), label: "Zoom out"),

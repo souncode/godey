@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:godey/responsive/vision/vision_home.dart';
 import 'splash_screen.dart';
 
 void main() {
@@ -13,7 +14,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+      home: VisionHomePage(),
+      //home: SplashScreen(),
     );
   }
 }
