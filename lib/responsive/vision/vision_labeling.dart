@@ -17,6 +17,7 @@ class _LabelingState extends State<Labeling> {
   bool isDrawingBox = false;
   Offset? startPoint;
   Offset? endPoint;
+  final List<String> classLabels = ['person', 'car', 'cat', 'dog', 'bottle'];
 
   List<Map<String, dynamic>> boundingBoxes = [];
 
@@ -31,7 +32,7 @@ class _LabelingState extends State<Labeling> {
     final uri = Uri.parse(
       'http://soun.mooo.com:3000/uploads?folder=$folder&filename=$filename',
     );
-
+    print('$uri');
     final response = await http.delete(uri);
 
     if (response.statusCode == 200) {
@@ -114,8 +115,6 @@ class _LabelingState extends State<Labeling> {
         reader.readAsArrayBuffer(file);
         await reader.onLoad.first;
         final bytes = reader.result as Uint8List;
-
-        // Upload ảnh lên server qua API
         final uri = Uri.parse(
           'http://soun.mooo.com:3000/uploads?folder=soun_user_1',
         );
@@ -184,58 +183,115 @@ class _LabelingState extends State<Labeling> {
   }) async {
     final url = Uri.parse('http://soun.mooo.com:3000/uploads/label');
 
+    final image = selectedImage;
+    if (image == null) return;
+
+    final decodedImage = await decodeImageFromList(image['bytes']);
+    final imageWidth = decodedImage.width.toDouble();
+    final imageHeight = decodedImage.height.toDouble();
+
+    final List<String> yoloLabels =
+        boundingBoxes
+            .map((box) {
+              final rectMap = box['rect'] as Map<String, dynamic>;
+              final rect = Rect.fromLTWH(
+                (rectMap['left'] ?? 0.0).toDouble(),
+                (rectMap['top'] ?? 0.0).toDouble(),
+                (rectMap['width'] ?? 0.0).toDouble(),
+                (rectMap['height'] ?? 0.0).toDouble(),
+              );
+
+              final label = box['label'];
+              final classIndex = classLabels.indexOf(label);
+              if (classIndex == -1) return '';
+
+              final xCenter = ((rect.left + rect.width / 2) / imageWidth).clamp(
+                0.0,
+                1.0,
+              );
+              final yCenter = ((rect.top + rect.height / 2) / imageHeight)
+                  .clamp(0.0, 1.0);
+              final width = (rect.width / imageWidth).clamp(0.0, 1.0);
+              final height = (rect.height / imageHeight).clamp(0.0, 1.0);
+
+              return '$classIndex $xCenter $yCenter $width $height';
+            })
+            .where((line) => line.isNotEmpty)
+            .toList();
+
     try {
+      print('Sending to server:');
+      print(
+        jsonEncode({
+          'name': imageName,
+          'folder': folder,
+          'yoloContent': yoloLabels.join('\n'),
+        }),
+      );
+
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'name': imageName,
           'folder': folder,
-          'boundingBoxes': boundingBoxes,
+          'yoloContent': yoloLabels.join('\n'),
         }),
       );
 
       if (response.statusCode == 200) {
-        print('✅ Label data saved successfully');
+        print('✅ YOLO label saved');
       } else {
-        print('❌ Failed to save label data: ${response.statusCode}');
+        print('❌ Failed to save YOLO label: ${response.statusCode}');
         print('Response body: ${response.body}');
       }
     } catch (e) {
-      print('❌ Error sending label data: $e');
+      print('❌ Error saving YOLO label: $e');
     }
   }
 
   void _showLabelDialog(int index) {
-    final controller = TextEditingController(
-      text: boundingBoxes[index]['label'],
-    );
+    String? selectedLabel = boundingBoxes[index]['label'];
 
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Enter label'),
-          content: TextField(
-            controller: controller,
-            autofocus: true,
-            decoration: const InputDecoration(hintText: 'e.g. person, car...'),
+          title: const Text('Class select'),
+          content: DropdownButton<String>(
+            isExpanded: true,
+            value: selectedLabel!.isNotEmpty ? selectedLabel : null,
+            hint: const Text('Class'),
+            items:
+                classLabels.map((label) {
+                  return DropdownMenuItem<String>(
+                    value: label,
+                    child: Text(label),
+                  );
+                }).toList(),
+            onChanged: (value) {
+              if (value != null) {
+                setState(() {
+                  boundingBoxes[index]['label'] = value;
+                });
+                Navigator.of(context).pop();
+              }
+            },
           ),
           actions: [
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+              onPressed: () => Navigator.of(context).pop(),
               child: const Text('Cancel'),
             ),
-            ElevatedButton(
+            TextButton(
               onPressed: () {
                 setState(() {
-                  boundingBoxes[index]['label'] = controller.text.trim();
+                  boundingBoxes.removeAt(index);
                 });
                 Navigator.of(context).pop();
               },
-              child: const Text('OK'),
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              child: const Text('Delete'),
             ),
           ],
         );
@@ -391,7 +447,7 @@ class _LabelingState extends State<Labeling> {
                               padding: const EdgeInsets.all(2),
                               child: const Icon(
                                 Icons.close,
-                                size: 16,
+                                size: 5,
                                 color: Colors.white,
                               ),
                             ),
@@ -477,7 +533,7 @@ class _LabelingState extends State<Labeling> {
                           ],
                         ),
                       )
-                      : const Center(child: Text("Chọn ảnh để gán nhãn")),
+                      : const Center(child: Text("Select")),
             ),
           ),
           Expanded(

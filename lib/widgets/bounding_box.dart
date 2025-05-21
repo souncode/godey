@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class BoundingBoxWidget extends StatefulWidget {
+  
   final Rect rect;
   final String label;
   final Function(Rect) onUpdate;
