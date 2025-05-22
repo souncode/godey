@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:godey/responsive/vision/server_api.dart';
 import 'package:godey/widgets/bounding_box.dart';
 import 'dart:html' as html;
 import 'package:http/http.dart' as http;
@@ -25,27 +26,6 @@ class _LabelingState extends State<Labeling> {
   Map<String, dynamic>? selectedImage;
   String imageInfo = '';
 
-  Future<bool> deleteImageOnServer({
-    required String folder,
-    required String filename,
-  }) async {
-    final uri = Uri.parse(
-      'http://soun.mooo.com:3000/uploads?folder=$folder&filename=$filename',
-    );
-    print('$uri');
-    final response = await http.delete(uri);
-
-    if (response.statusCode == 200) {
-      print('✅ Deleted $filename on server');
-      return true;
-    } else {
-      print(
-        '❌ Failed to delete $filename on server, status: ${response.statusCode}',
-      );
-      return false;
-    }
-  }
-
   Future<void> fetchImagesFromServer() async {
     final uri = Uri.parse(
       'http://soun.mooo.com:3000/uploads/list?folder=soun_user_1',
@@ -57,35 +37,41 @@ class _LabelingState extends State<Labeling> {
 
       List<Map<String, dynamic>> images = [];
       for (var item in data) {
-        final imageUrl = item['url'];
+        final imageUrl = item['url']; // full image
+        final thumbUrl = item['thumbUrl']; // lightweight thumbnail
         final imageName = item['name'];
         final labelUrl = item['labelUrl'];
         final boundingBoxes = item['boundingBoxes'];
 
         try {
-          final imageResp = await http.get(Uri.parse(imageUrl));
+          // Ưu tiên load thumbnail để nhẹ
+          final thumbResp = await http.get(Uri.parse(thumbUrl));
 
-          final contentType = imageResp.headers['content-type'];
-          final bytes = imageResp.bodyBytes;
+          final contentType = thumbResp.headers['content-type'];
+          final bytes = thumbResp.bodyBytes;
 
-          if (imageResp.statusCode == 200 &&
+          if (thumbResp.statusCode == 200 &&
               contentType != null &&
               contentType.startsWith('image/') &&
               bytes.isNotEmpty) {
             images.add({
-              'bytes': bytes,
+              'bytes': bytes, // Thumbnail bytes để hiển thị nhanh
+              'originalUrl': imageUrl, // Lưu lại link ảnh gốc
               'name': imageName,
               'labelUrl': labelUrl,
               'boundingBoxes': boundingBoxes,
             });
-            print('✅ Loaded image: $imageName (${bytes.lengthInBytes} bytes)');
+
+            print(
+              '✅ Loaded thumbnail: $imageName (${bytes.lengthInBytes} bytes)',
+            );
           } else {
             print(
-              '⚠️ Skipped invalid image: $imageName (${imageResp.statusCode}, Content-Type: $contentType, Size: ${bytes.length})',
+              '⚠️ Skipped invalid thumbnail: $imageName (${thumbResp.statusCode}, Content-Type: $contentType, Size: ${bytes.length})',
             );
           }
         } catch (e) {
-          print('❌ Error loading image $imageName: $e');
+          print('❌ Error loading thumbnail $imageName: $e');
         }
       }
 
@@ -153,27 +139,41 @@ class _LabelingState extends State<Labeling> {
     }
   }
 
-  void selectImage(Map<String, dynamic> image) {
-    final bytes = image['bytes'] as Uint8List;
-    setState(() {
-      selectedImage = image;
-      boundingBoxes =
-          (image['boundingBoxes'] as List<dynamic>? ?? [])
-              .map(
-                (box) => {
-                  'rect': Rect.fromLTWH(
-                    (box['rect']['x'] as num).toDouble(),
-                    (box['rect']['y'] as num).toDouble(),
-                    (box['rect']['width'] as num).toDouble(),
-                    (box['rect']['height'] as num).toDouble(),
-                  ),
-                  'label': box['label'],
-                },
-              )
-              .toList();
-      imageInfo =
-          'Name: ${image['name']}\nSize: ${(bytes.lengthInBytes / 1024).toStringAsFixed(2)} KB';
-    });
+  void selectImage(Map<String, dynamic> image) async {
+    final originalUrl = image['originalUrl'];
+
+    try {
+      final response = await http.get(Uri.parse(originalUrl));
+
+      if (response.statusCode == 200) {
+        final bytes = response.bodyBytes;
+
+        setState(() {
+          selectedImage = image;
+          image['bytes'] = bytes; // Lưu lại nếu muốn dùng sau
+          boundingBoxes =
+              (image['boundingBoxes'] as List<dynamic>? ?? [])
+                  .map(
+                    (box) => {
+                      'rect': Rect.fromLTWH(
+                        (box['rect']['x'] as num).toDouble(),
+                        (box['rect']['y'] as num).toDouble(),
+                        (box['rect']['width'] as num).toDouble(),
+                        (box['rect']['height'] as num).toDouble(),
+                      ),
+                      'label': box['label'],
+                    },
+                  )
+                  .toList();
+          imageInfo =
+              'Name: ${image['name']}\nSize: ${(bytes.lengthInBytes / 1024).toStringAsFixed(2)} KB';
+        });
+      } else {
+        print('❌ Failed to load full image ${image['name']}');
+      }
+    } catch (e) {
+      print('❌ Error loading full image: $e');
+    }
   }
 
   Future<void> saveLabeledImageToServer({
@@ -226,6 +226,7 @@ class _LabelingState extends State<Labeling> {
           'name': imageName,
           'folder': folder,
           'yoloContent': yoloLabels.join('\n'),
+          'boundingBoxes': boundingBoxes,
         }),
       );
 
@@ -235,6 +236,7 @@ class _LabelingState extends State<Labeling> {
         body: jsonEncode({
           'name': imageName,
           'folder': folder,
+          'boundingBoxes': boundingBoxes,
           'yoloContent': yoloLabels.join('\n'),
         }),
       );
