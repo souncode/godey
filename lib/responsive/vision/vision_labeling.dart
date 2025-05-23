@@ -268,7 +268,7 @@ class _LabelingState extends State<Labeling> {
             child: Icon(Icons.file_upload),
             label: "Upload",
             onTap: () {
-              uploadImagesToServer(context);
+              uploadImagesToServer(context,"soun_user_2","project1");
             },
           ),
           SpeedDialChild(

@@ -24,7 +24,7 @@ Future<bool> deleteImageOnServer({
       return false;
     }
   }
-    Future<void> uploadImagesToServer(BuildContext context) async {
+    Future<void> uploadImagesToServer(BuildContext context, String user,String project ) async {
     final input = html.FileUploadInputElement();
     input.multiple = true;
     input.accept = 'image/*';
@@ -39,7 +39,7 @@ Future<bool> deleteImageOnServer({
         await reader.onLoad.first;
         final bytes = reader.result as Uint8List;
         final uri = Uri.parse(
-          'http://soun.mooo.com:3000/uploads?folder=soun_user_1',
+          'http://soun.mooo.com:3000/uploads?folder=${user}/${project}',
         );
         final request = http.MultipartRequest('POST', uri)
           ..files.add(

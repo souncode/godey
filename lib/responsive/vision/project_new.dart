@@ -142,7 +142,7 @@ class _UploadState extends State<Upload> {
                   const SizedBox(height: 20),
                   GestureDetector(
                     onTap: () {
-                      uploadImagesToServer(context);
+                      uploadImagesToServer(context,"soun_user_2","project1");
                     },
                     child: const DottedBorderBox(),
                   ),
