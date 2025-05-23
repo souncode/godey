@@ -14,15 +14,11 @@ class Upload extends StatefulWidget {
 
 class _UploadState extends State<Upload> {
   int _currentStep = 0;
-  final List<String> _steps = ["Select Site", "Add Images", "Review"];
+  final List<String> _steps = ["Create Project", "Add Images", "Review"];
 
   final TextEditingController _projectNameController = TextEditingController();
   final TextEditingController _classNameController = TextEditingController();
-
-  // Danh sách class đã thêm
   List<String> _classList = [];
-
-  // Chỉ số class đang sửa, -1 nếu không đang sửa
   int _editingIndex = -1;
 
   @override
@@ -152,7 +148,7 @@ class _UploadState extends State<Upload> {
                   const SizedBox(height: 20),
                 ] else ...[
                   const Text(
-                    "Review Step (Chưa cài đặt nội dung)",
+                    "XXXXXXXXXXX",
                     style: TextStyle(fontSize: 18),
                   ),
                   const SizedBox(height: 20),

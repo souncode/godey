@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:godey/const/constant.dart';
+import 'package:godey/responsive/vision/project_upload.dart';
 import 'package:godey/responsive/vision/projects.dart';
 
 import 'package:godey/responsive/vision/vision_labeling.dart';
@@ -13,6 +14,7 @@ class VisionHomePage extends StatefulWidget {
 }
 
 class _VisionHomePageState extends State<VisionHomePage> {
+  int _currentPage = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,10 +95,9 @@ class _VisionHomePageState extends State<VisionHomePage> {
                         ),
                       ),
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => Projects()),
-                        );
+                        setState(() {
+                          _currentPage = 1;
+                        });
                       },
                       child: Icon(color: textDarkColor, Icons.folder),
                     ),
@@ -114,7 +115,11 @@ class _VisionHomePageState extends State<VisionHomePage> {
                           borderRadius: BorderRadius.circular(0),
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        setState(() {
+                          _currentPage = 2;
+                        });
+                      },
                       child: Icon(color: textDarkColor, Icons.new_label),
                     ),
                   ),
@@ -156,7 +161,36 @@ class _VisionHomePageState extends State<VisionHomePage> {
               ],
             ),
           ),
-          Expanded(child: Projects()),
+          SizedBox(
+            width: 50,
+            child: Container(
+              color: Colors.black,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  RotatedBox(
+                    quarterTurns: 3, // Xoay 270 độ = văn bản dọc từ dưới lên
+                    child: Text(
+                      (_currentPage == 1) ? 'Projects' : 'Labeling',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            child:
+                (_currentPage == 1)
+                    ? (Projects())
+                    : (_currentPage == 2)
+                    ? Labeling()
+                    : Container(),
+          ),
         ],
       ),
     );
