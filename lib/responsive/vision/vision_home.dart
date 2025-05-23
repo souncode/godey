@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:godey/const/constant.dart';
+import 'package:godey/responsive/vision/projects.dart';
 
 import 'package:godey/responsive/vision/vision_labeling.dart';
 
@@ -25,7 +26,7 @@ class _VisionHomePageState extends State<VisionHomePage> {
               height: 50,
               colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
             ),
-            SizedBox(width: 100),
+            SizedBox(width: 41),
             SizedBox(
               height: 100,
               child: ElevatedButton(
@@ -91,7 +92,12 @@ class _VisionHomePageState extends State<VisionHomePage> {
                           borderRadius: BorderRadius.circular(0),
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Projects()),
+                        );
+                      },
                       child: Icon(color: textDarkColor, Icons.folder),
                     ),
                   ),
@@ -150,7 +156,7 @@ class _VisionHomePageState extends State<VisionHomePage> {
               ],
             ),
           ),
-          Expanded(child: Labeling()),
+          Expanded(child: Projects()),
         ],
       ),
     );

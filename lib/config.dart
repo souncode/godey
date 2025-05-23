@@ -1,4 +1,4 @@
-final url = "soun.mooo.com";
+final url = "soun.mooo.com:3000";
 final registration = "http://$url/addline";
 final deleteLinecfg = "http://$url/deleteline";
 final deleteDevicecfg = "http://$url/deletedevice";

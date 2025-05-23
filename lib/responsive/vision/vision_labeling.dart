@@ -6,6 +6,7 @@ import 'package:godey/responsive/vision/server_api.dart';
 import 'package:godey/widgets/bounding_box.dart';
 import 'dart:html' as html;
 import 'package:http/http.dart' as http;
+import 'dart:ui' as ui;
 
 class Labeling extends StatefulWidget {
   const Labeling({super.key});
@@ -15,13 +16,13 @@ class Labeling extends StatefulWidget {
 }
 
 class _LabelingState extends State<Labeling> {
+  double imageScale = 1.0;
+  Size? imageDisplaySize;
   bool isDrawingBox = false;
   Offset? startPoint;
   Offset? endPoint;
   final List<String> classLabels = ['person', 'car', 'cat', 'dog', 'bottle'];
-
   List<Map<String, dynamic>> boundingBoxes = [];
-
   List<Map<String, dynamic>> imageAssets = [];
   Map<String, dynamic>? selectedImage;
   String imageInfo = '';
@@ -87,7 +88,7 @@ class _LabelingState extends State<Labeling> {
     }
   }
 
-  Future<void> loadImagesFromFolder() async {
+  Future<void> uploadImagesToServer() async {
     final input = html.FileUploadInputElement();
     input.multiple = true;
     input.accept = 'image/*';
@@ -141,16 +142,14 @@ class _LabelingState extends State<Labeling> {
 
   void selectImage(Map<String, dynamic> image) async {
     final originalUrl = image['originalUrl'];
-
     try {
       final response = await http.get(Uri.parse(originalUrl));
-
       if (response.statusCode == 200) {
         final bytes = response.bodyBytes;
-
+        final decodedImage = await decodeImageFromList(bytes);
         setState(() {
           selectedImage = image;
-          image['bytes'] = bytes; // Lưu lại nếu muốn dùng sau
+          image['bytes'] = bytes;
           boundingBoxes =
               (image['boundingBoxes'] as List<dynamic>? ?? [])
                   .map(
@@ -166,7 +165,9 @@ class _LabelingState extends State<Labeling> {
                   )
                   .toList();
           imageInfo =
-              'Name: ${image['name']}\nSize: ${(bytes.lengthInBytes / 1024).toStringAsFixed(2)} KB';
+              'Name: ${image['name']}\nSize: ${(bytes.lengthInBytes / 1024).toStringAsFixed(2)} KB\nOriginal size: ${decodedImage.width} x ${decodedImage.height}';
+          imageScale = 1.0;
+          imageDisplaySize = null;
         });
       } else {
         print('❌ Failed to load full image ${image['name']}');
@@ -309,18 +310,16 @@ class _LabelingState extends State<Labeling> {
         children: [
           SpeedDialChild(
             child: Icon(Icons.file_download),
-            label: "Add",
+            label: "DownLoad Zip",
             onTap: () {
-              loadImagesFromFolder();
+              // uploadImagesToServer();
             },
           ),
           SpeedDialChild(
-            child: Icon(Icons.plus_one),
-            label: "Add",
+            child: Icon(Icons.file_upload),
+            label: "Upload",
             onTap: () {
-              setState(() {
-                isDrawingBox = true;
-              });
+              uploadImagesToServer();
             },
           ),
           SpeedDialChild(
@@ -355,10 +354,6 @@ class _LabelingState extends State<Labeling> {
             child: const Icon(Icons.save),
             label: "Save",
           ),
-
-          SpeedDialChild(child: Icon(Icons.text_fields), label: "Edit"),
-          SpeedDialChild(child: Icon(Icons.zoom_in), label: "Zoom in"),
-          SpeedDialChild(child: Icon(Icons.zoom_out), label: "Zoom out"),
           SpeedDialChild(
             child: Icon(Icons.refresh),
             label: "Load from server",
@@ -464,78 +459,202 @@ class _LabelingState extends State<Labeling> {
           ),
           Expanded(
             flex: 5,
-
             child: Container(
-              color: Colors.white,
+              color: Colors.grey.shade300,
               child:
-                  selectedImage != null
-                      ? GestureDetector(
-                        onPanStart: (details) {
-                          if (isDrawingBox) {
-                            setState(() {
-                              startPoint = details.localPosition;
-                              endPoint = details.localPosition;
-                            });
-                          }
-                        },
-                        onPanUpdate: (details) {
-                          if (isDrawingBox) {
-                            setState(() {
-                              endPoint = details.localPosition;
-                            });
-                          }
-                        },
-                        onPanEnd: (details) {
-                          if (isDrawingBox &&
-                              startPoint != null &&
-                              endPoint != null) {
-                            setState(() {
-                              boundingBoxes.add({
-                                'rect': Rect.fromPoints(startPoint!, endPoint!),
-                                'label': '',
-                              });
-                              startPoint = null;
-                              endPoint = null;
-                              isDrawingBox = false;
-                            });
-                          }
-                        },
-                        child: Stack(
-                          children: [
-                            Image.memory(selectedImage!['bytes']),
-                            ...boundingBoxes.asMap().entries.map((entry) {
-                              final index = entry.key;
-                              final box = entry.value;
-                              return BoundingBoxWidget(
-                                rect: box['rect'],
-                                label: box['label'],
-                                onTap: () => _showLabelDialog(index),
-                                onUpdate: (newRect) {
-                                  setState(() {
-                                    boundingBoxes[index]['rect'] = newRect;
-                                  });
-                                },
+                  selectedImage == null
+                      ? const Center(child: Text('Select an image'))
+                      : LayoutBuilder(
+                        builder: (context, constraints) {
+                          final imageBytes =
+                              selectedImage!['bytes'] as Uint8List;
+
+                          return FutureBuilder<ui.Image>(
+                            future: decodeImageFromList(imageBytes),
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData) {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
+                              final image = snapshot.data!;
+                              final originalWidth = image.width.toDouble();
+                              final originalHeight = image.height.toDouble();
+
+                              // Tính scale để vừa với box chứa (constraints)
+                              final scaleX =
+                                  constraints.maxWidth / originalWidth;
+                              final scaleY =
+                                  constraints.maxHeight / originalHeight;
+                              final scale = scaleX < scaleY ? scaleX : scaleY;
+
+                              final displayWidth = originalWidth * scale;
+                              final displayHeight = originalHeight * scale;
+
+                              // Lưu scale & size để dùng khi vẽ box
+                              imageScale = scale;
+                              imageDisplaySize = Size(
+                                displayWidth,
+                                displayHeight,
                               );
-                            }),
-                            if (startPoint != null && endPoint != null)
-                              Positioned(
-                                left: startPoint!.dx,
-                                top: startPoint!.dy,
-                                width: (endPoint!.dx - startPoint!.dx).abs(),
-                                height: (endPoint!.dy - startPoint!.dy).abs(),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: Colors.blue,
-                                      width: 1,
+
+                              return Center(
+                                child: GestureDetector(
+                                  onPanStart: (details) {
+                                    final localPosition = (context
+                                                .findRenderObject()
+                                            as RenderBox)
+                                        .globalToLocal(details.globalPosition);
+
+                                    final dx = localPosition.dx;
+                                    final dy = localPosition.dy;
+
+                                    // Chuyển về tọa độ ảnh gốc
+                                    final x = dx / imageScale;
+                                    final y = dy / imageScale;
+
+                                    setState(() {
+                                      startPoint = Offset(x, y);
+                                      endPoint = null;
+                                      isDrawingBox = true;
+                                    });
+                                  },
+                                  onPanUpdate: (details) {
+                                    if (!isDrawingBox) return;
+
+                                    final localPosition = (context
+                                                .findRenderObject()
+                                            as RenderBox)
+                                        .globalToLocal(details.globalPosition);
+
+                                    final dx = localPosition.dx;
+                                    final dy = localPosition.dy;
+
+                                    final x = dx / imageScale;
+                                    final y = dy / imageScale;
+
+                                    setState(() {
+                                      endPoint = Offset(x, y);
+                                    });
+                                  },
+                                  onPanEnd: (details) {
+                                    if (!isDrawingBox ||
+                                        startPoint == null ||
+                                        endPoint == null)
+                                      return;
+
+                                    final left =
+                                        startPoint!.dx < endPoint!.dx
+                                            ? startPoint!.dx
+                                            : endPoint!.dx;
+                                    final top =
+                                        startPoint!.dy < endPoint!.dy
+                                            ? startPoint!.dy
+                                            : endPoint!.dy;
+                                    final width =
+                                        (startPoint!.dx - endPoint!.dx).abs();
+                                    final height =
+                                        (startPoint!.dy - endPoint!.dy).abs();
+
+                                    final newRect = Rect.fromLTWH(
+                                      left,
+                                      top,
+                                      width,
+                                      height,
+                                    );
+
+                                    setState(() {
+                                      boundingBoxes.add({
+                                        'rect': newRect,
+                                        'label': '',
+                                      });
+                                      startPoint = null;
+                                      endPoint = null;
+                                      isDrawingBox = false;
+                                    });
+                                  },
+                                  child: SizedBox(
+                                    width: displayWidth,
+                                    height: displayHeight,
+                                    child: Stack(
+                                      children: [
+                                        Image.memory(
+                                          imageBytes,
+                                          fit: BoxFit.contain,
+                                          width: displayWidth,
+                                          height: displayHeight,
+                                        ),
+                                        ...boundingBoxes.asMap().entries.map((
+                                          entry,
+                                        ) {
+                                          final idx = entry.key;
+                                          final box = entry.value;
+                                          final rect = box['rect'] as Rect;
+                                          final label = box['label'] as String;
+                                          final displayRect = Rect.fromLTWH(
+                                            rect.left * imageScale,
+                                            rect.top * imageScale,
+                                            rect.width * imageScale,
+                                            rect.height * imageScale,
+                                          );
+
+                                          return BoundingBoxWidget(
+                                            rect: displayRect,
+                                            label: label,
+                                            onUpdate: (updatedDisplayRect) {
+                                              final updatedRect = Rect.fromLTWH(
+                                                updatedDisplayRect.left /
+                                                    imageScale,
+                                                updatedDisplayRect.top /
+                                                    imageScale,
+                                                updatedDisplayRect.width /
+                                                    imageScale,
+                                                updatedDisplayRect.height /
+                                                    imageScale,
+                                              );
+                                              setState(() {
+                                                boundingBoxes[idx]['rect'] =
+                                                    updatedRect;
+                                              });
+                                            },
+                                            onTap: () => _showLabelDialog(idx),
+                                          );
+                                        }),
+                                        if (startPoint != null &&
+                                            endPoint != null)
+                                          Positioned(
+                                            left: (startPoint!.dx * imageScale)
+                                                .clamp(0, displayWidth),
+                                            top: (startPoint!.dy * imageScale)
+                                                .clamp(0, displayHeight),
+                                            width: ((endPoint!.dx -
+                                                            startPoint!.dx)
+                                                        .abs() *
+                                                    imageScale)
+                                                .clamp(0, displayWidth),
+                                            height: ((endPoint!.dy -
+                                                            startPoint!.dy)
+                                                        .abs() *
+                                                    imageScale)
+                                                .clamp(0, displayHeight),
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                  color: Colors.blue,
+                                                  width: 1,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                      ],
                                     ),
                                   ),
                                 ),
-                              ),
-                          ],
-                        ),
-                      )
-                      : const Center(child: Text("Select")),
+                              );
+                            },
+                          );
+                        },
+                      ),
             ),
           ),
           Expanded(
