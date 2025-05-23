@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:godey/const/constant.dart';
-import 'package:godey/responsive/vision/project_upload.dart';
+import 'package:godey/responsive/desktop_scaffold.dart';
 import 'package:godey/responsive/vision/projects.dart';
 
 import 'package:godey/responsive/vision/vision_labeling.dart';
@@ -14,7 +14,7 @@ class VisionHomePage extends StatefulWidget {
 }
 
 class _VisionHomePageState extends State<VisionHomePage> {
-  int _currentPage = 0;
+  int _currentPage = 1;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,6 +41,13 @@ class _VisionHomePageState extends State<VisionHomePage> {
                 onPressed: () {
                   if (Navigator.canPop(context)) {
                     Navigator.pop(context);
+                  } else {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DesktopScaffold(),
+                      ),
+                    );
                   }
                 },
                 child: const Text(
@@ -136,7 +143,11 @@ class _VisionHomePageState extends State<VisionHomePage> {
                           borderRadius: BorderRadius.circular(0),
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        setState(() {
+                          _currentPage = 3;
+                        });
+                      },
                       child: Icon(color: textDarkColor, Icons.model_training),
                     ),
                   ),
@@ -153,7 +164,11 @@ class _VisionHomePageState extends State<VisionHomePage> {
                           borderRadius: BorderRadius.circular(0),
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        setState(() {
+                          _currentPage = 4;
+                        });
+                      },
                       child: Icon(color: textDarkColor, Icons.star),
                     ),
                   ),
@@ -171,7 +186,13 @@ class _VisionHomePageState extends State<VisionHomePage> {
                   RotatedBox(
                     quarterTurns: 3, // Xoay 270 độ = văn bản dọc từ dưới lên
                     child: Text(
-                      (_currentPage == 1) ? 'Projects' : 'Labeling',
+                      (_currentPage == 1)
+                          ? 'Projects'
+                          : (_currentPage == 2)
+                          ? 'Labeling'
+                          : (_currentPage == 3)
+                          ? '3'
+                          : '4',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
