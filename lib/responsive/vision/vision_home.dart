@@ -22,12 +22,11 @@ class VisionHomePage extends StatefulWidget {
 
 class _VisionHomePageState extends State<VisionHomePage> {
   int _currentPage = 1;
-
   String _currentProject = "";
   @override
   void initState() {
     super.initState();
-    print(widget.index);
+    print("Current Project :" + widget.projectId);
     _currentPage = widget.index;
     _currentProject = widget.projectId;
   }

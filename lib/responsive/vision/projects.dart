@@ -12,7 +12,6 @@ class Projects extends StatefulWidget {
 }
 
 String _userID = "6831f177ead28d72e8803dc8";
-String _currentProject = "";
 bool _hasProject = false;
 bool _isLoading = true;
 
