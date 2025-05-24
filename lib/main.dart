@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: VisionHomePage(),
+      home: VisionHomePage(projectId: "", index: 1),
       // home: SplashScreen(),
     );
   }

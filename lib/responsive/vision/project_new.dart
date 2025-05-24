@@ -7,8 +7,8 @@ void main() {
 }
 
 class Upload extends StatefulWidget {
-  const Upload({Key? key}) : super(key: key);
-
+  final VoidCallback? onProjectCreateCancel;
+  const Upload({Key? key, this.onProjectCreateCancel}) : super(key: key);
   @override
   State<Upload> createState() => _UploadState();
 }
@@ -21,6 +21,8 @@ class _UploadState extends State<Upload> {
   final TextEditingController _classNameController = TextEditingController();
   List<String> _classList = [];
   int _editingIndex = -1;
+  String _currentProject = "";
+  String _userID = "6831f177ead28d72e8803dc8";
 
   @override
   Widget build(BuildContext context) {
@@ -141,8 +143,22 @@ class _UploadState extends State<Upload> {
                   const Text("Images need to be geotagged JPGs."),
                   const SizedBox(height: 20),
                   GestureDetector(
-                    onTap: () {
-                      uploadImagesToServer(context,"soun_user_2","project1");
+                    onTap: () async {
+                      print("con cac dat " + _currentProject);
+                      final success = await ServerApi.uploadImagesToServer(
+                        context,
+                        _userID,
+                        _currentProject,
+                      );
+                      if (success) {
+                        setState(() {
+                          if (_currentStep > 0) _currentStep++;
+                        });
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("Upload failed")),
+                        );
+                      }
                     },
                     child: const DottedBorderBox(),
                   ),
@@ -163,17 +179,65 @@ class _UploadState extends State<Upload> {
                       onPressed: () {
                         setState(() {
                           if (_currentStep > 0) _currentStep--;
+                          if (_currentStep == 0) {
+                            widget.onProjectCreateCancel?.call();
+                          }
                         });
                       },
                       child: const Text("Back"),
                     ),
                     const SizedBox(width: 16),
                     ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          if (_currentStep < 2) _currentStep++;
-                        });
+                      onPressed: () async {
+                        if (_currentStep == 0) {
+                          final projectName =
+                              _projectNameController.text.trim();
+
+                          if (projectName.isEmpty || _classList.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  "Please enter project name and at least one class",
+                                ),
+                              ),
+                            );
+                            return;
+                          }
+
+                          final Map<String, dynamic> payload = {
+                            "user": _userID,
+                            "name": projectName,
+                            "type": "vision",
+                            "time": DateTime.now().toIso8601String(),
+                            "classes": _classList,
+                          };
+
+                          final projectId = await ServerApi.addProject(payload);
+                          print(projectId);
+
+                          if (projectId != null && projectId.isNotEmpty) {
+                            setState(() {
+                              _currentProject = projectId;
+                              _currentStep++;
+                            });
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("Failed to create project"),
+                              ),
+                            );
+                          }
+                        } else {
+                          setState(() {
+                            if (_currentStep < 2) _currentStep++;
+                            if (_currentStep < 3) {
+                              widget.onProjectCreateCancel?.call();
+                              _currentStep = 0;
+                            }
+                          });
+                        }
                       },
+
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blueAccent,
                       ),

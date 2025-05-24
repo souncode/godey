@@ -76,7 +76,10 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => VisionHomePage()),
+                    MaterialPageRoute(
+                      builder:
+                          (context) => VisionHomePage(projectId: "", index: 1),
+                    ),
                   );
                 },
                 child: const Text(

@@ -88,7 +88,6 @@ class _LabelingState extends State<Labeling> {
     }
   }
 
-
   void selectImage(Map<String, dynamic> image) async {
     final originalUrl = image['originalUrl'];
     try {
@@ -268,7 +267,7 @@ class _LabelingState extends State<Labeling> {
             child: Icon(Icons.file_upload),
             label: "Upload",
             onTap: () {
-              uploadImagesToServer(context,"soun_user_2","project1");
+              ServerApi.uploadImagesToServer(context,"soun_user_2","project1");
             },
           ),
           SpeedDialChild(
@@ -362,7 +361,7 @@ class _LabelingState extends State<Labeling> {
                                   'soun_user_1'; // folder bạn đang dùng
                               final filename = image['name'];
 
-                              final success = await deleteImageOnServer(
+                              final success = await ServerApi.deleteImageOnServer(
                                 folder: folder,
                                 filename: filename,
                               );

@@ -7,7 +7,14 @@ import 'package:godey/responsive/vision/projects.dart';
 import 'package:godey/responsive/vision/vision_labeling.dart';
 
 class VisionHomePage extends StatefulWidget {
-  const VisionHomePage({super.key});
+  final String projectId;
+  final int index;
+
+  const VisionHomePage({
+    super.key,
+    required this.projectId,
+    required this.index,
+  });
 
   @override
   State<VisionHomePage> createState() => _VisionHomePageState();
@@ -15,6 +22,16 @@ class VisionHomePage extends StatefulWidget {
 
 class _VisionHomePageState extends State<VisionHomePage> {
   int _currentPage = 1;
+
+  String _currentProject = "";
+  @override
+  void initState() {
+    super.initState();
+    print(widget.index);
+    _currentPage = widget.index;
+    _currentProject = widget.projectId;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
