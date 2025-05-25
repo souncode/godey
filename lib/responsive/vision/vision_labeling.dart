@@ -9,30 +9,52 @@ import 'package:http/http.dart' as http;
 import 'dart:ui' as ui;
 
 class Labeling extends StatefulWidget {
-  const Labeling({super.key});
+  final String projectId;
+  final String userId;
+  const Labeling({super.key, required this.projectId, required this.userId});
 
   @override
   State<Labeling> createState() => _LabelingState();
 }
 
 class _LabelingState extends State<Labeling> {
+  void initState() {
+    super.initState();
+    fetchImagesFromServer();
+    loadProjectClasses();
+  }
+
   double imageScale = 1.0;
   Size? imageDisplaySize;
   bool isDrawingBox = false;
   Offset? startPoint;
   Offset? endPoint;
-  final List<String> classLabels = ['person', 'car', 'cat', 'dog', 'bottle'];
+  List<String> classLabels = ['d', 'a', 'd'];
   List<Map<String, dynamic>> boundingBoxes = [];
   List<Map<String, dynamic>> imageAssets = [];
   Map<String, dynamic>? selectedImage;
   String imageInfo = '';
 
+  Future<void> loadProjectClasses() async {
+    final classLabelss = await fetchClassLabels(
+      projectId: "6832df3dd3afa667f8107292",
+      userId: widget.userId,
+    );
+    print("Classes: $classLabels");
+    if (classLabelss != []) {
+      setState(() {
+        classLabels = ['zxc', 'zxc'];
+      });
+    }
+    // cập nhật UI nếu cần
+  }
+
   Future<void> fetchImagesFromServer() async {
     final uri = Uri.parse(
-      'http://soun.mooo.com:3000/uploads/list?folder=soun_user_1',
+      'http://soun.mooo.com:3000/uploads/list?folder=${widget.userId}/${widget.projectId}',
     );
     final response = await http.get(uri);
-
+    print('project id${widget.projectId}');
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
 
@@ -269,8 +291,8 @@ class _LabelingState extends State<Labeling> {
             onTap: () {
               ServerApi.uploadImagesToServer(
                 context,
-                "soun_user_2",
-                "project1",
+                widget.userId,
+                widget.projectId,
               );
             },
           ),
@@ -299,7 +321,7 @@ class _LabelingState extends State<Labeling> {
 
               saveLabeledImageToServer(
                 imageName: selectedImage!['name'],
-                folder: 'soun_user_1',
+                folder: '${widget.userId}/${widget.projectId}',
                 boundingBoxes: processedBoxes,
               );
             },

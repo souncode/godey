@@ -225,7 +225,10 @@ class _VisionHomePageState extends State<VisionHomePage> {
                 (_currentPage == 1)
                     ? (Projects())
                     : (_currentPage == 2)
-                    ? Labeling()
+                    ? Labeling(
+                      projectId: _currentProject,
+                      userId: "6831f177ead28d72e8803dc8",
+                    )
                     : Container(),
           ),
         ],

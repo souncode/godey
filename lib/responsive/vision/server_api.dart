@@ -97,7 +97,9 @@ class ServerApi {
     return null; // Trả về null nếu thất bại
   }
 
- static Future<Map<String, dynamic>> getProject(Map<String, dynamic> data) async {
+  static Future<Map<String, dynamic>> getProject(
+    Map<String, dynamic> data,
+  ) async {
     const String url = "http://soun.mooo.com:3000/getproject";
     try {
       final response = await http.post(
@@ -108,7 +110,7 @@ class ServerApi {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> resJson = json.decode(response.body);
-        return resJson; 
+        return resJson;
       } else {
         print("API failed with status: ${response.statusCode}");
       }
@@ -117,5 +119,48 @@ class ServerApi {
     }
     return {};
   }
-
 }
+
+Future<List<String>> fetchClassLabels({
+  required String projectId,
+  required String userId,
+}) async {
+  const String url = "http://soun.mooo.com:3000/getproject";
+
+  try {
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {"Content-Type": "application/json"},
+      body: json.encode({"user": userId}), // ✅ Đã truyền đúng
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> resJson = json.decode(response.body);
+      print("Full response: $resJson");
+
+      if (resJson.containsKey('successRes')) {
+        List<dynamic> projects = resJson['successRes'];
+        print("Project IDs: ${projects.map((p) => p['_id']).toList()}");
+
+        final project = projects.firstWhere(
+          (proj) => proj['_id'].toString() == projectId.toString(),
+          orElse: () => null,
+        );
+
+        if (project != null && project['classes'] is List) {
+          print("Found project: $project");
+          return List<String>.from(project['classes']);
+        } else {
+          print("Project not found or classes invalid.");
+        }
+      }
+    } else {
+      print("API failed with status: ${response.statusCode}");
+    }
+  } catch (e) {
+    print("API Error: $e");
+  }
+
+  return [];
+}
+
